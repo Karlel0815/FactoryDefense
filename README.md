@@ -1,21 +1,28 @@
-# Sky Defender
+# Moon Dome – Production Survival (DEV V0.1)
 
-Ein kleines 2D-Browser-Flugzeugspiel für Handy und Desktop.
+Ein eigenständiger, experimenteller **Browser-Prototyp** von Moon Dome. Keine Verbindung zu Forgefront.
 
-## V0.1
+## Start
 
-- Touch- und Maussteuerung
-- Automatisches Schießen
-- Gegner mit steigender Schwierigkeit
-- Punkte
-- 3 Leben
-- Wellen-System
-- Game Over und Neustart
+`index.html` im Browser öffnen. Funktioniert ohne Server und ohne externe Bibliotheken.
 
-Das Spiel läuft vollständig im Browser über GitHub Pages.
+## Bedienung
 
-## Projektziel
+- Zu Beginn eine Fabrik und ein MG auf den markierten Plätzen bauen (Metallkosten sichtbar).
+- **Welle 1 starten**: Produktion beginnt erst mit der ersten Welle (kein Vorfarmen).
+- Weitere Minen, Fabriken und MGs über feste Plätze kaufen.
+- Drei **globale Forschungen** mit jeweils drei Stufen verbessern Förderung, Verarbeitung und MG-Schaden.
+- Alle MGs beziehen ihre Munition aus einem gemeinsamen Vorrat. Bei Mangel wird die Schussrate fair gedrosselt.
+- Genau ein festgelegter Gegnerweg, ein Gegnertyp, fünf MG-Plätze, begrenzte Reichweite.
+- Nächste Welle nach fünf Sekunden; die optionale Pause zwischen Wellen friert die gesamte Wirtschaft ein.
+- Kuppelschaden bleibt bestehen. Bei Zerstörung endet der Run; der höchste abgeschlossene Wellenrekord wird lokal gespeichert.
 
-Sky Defender dient als erstes größeres Spielprojekt im Workflow:
+## Konzeptstatus
 
-ChatGPT -> Projektstand -> GitHub -> GitHub Pages -> Test im Browser
+Die Zahlen zu Startmetall, Kosten, Produktionsraten, HP, Weggeometrie, Reichweiten und Gegnern sind **Testannahmen**, keine festgelegten finalen Balancingwerte. Die fünf Sekunden zwischen den Wellen laufen in diesem Prototyp in Echtzeit. Kein Gold, keine weiteren Waffen oder Wege, keine Leitungen. Kein echtes Savegame und keine Online-Bestenliste.
+
+## Entwicklungsstatus
+
+DEV V0.1 (dev2) befindet sich auf Branch `feat/production-survival-v01` und ist **nicht** auf `main` bzw. GitHub Pages veröffentlicht. Die aktuellen Zahlen sind nur Testwerte. Vor einer Veröffentlichung stehen Smartphone-Tests und Balancingprüfung aus.
+
+Konzept: https://docs.google.com/document/d/1lUb6J9ZJk_QFUXJjMPBIE6NUVYtceo__PW76sJog9mo/edit
