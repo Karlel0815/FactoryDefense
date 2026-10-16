@@ -1,42 +1,38 @@
-# FactoryDefense – DEV3: Verteidigung und Wellen
+# FactoryDefense – DEV4 Fabriknetze & Angriffseinheiten
 
-**Eigenständiges Fabrik-Verteidigungsspiel (Browser), Entwicklungsbranch `feat/dev3-defense-waves`.** Nicht Forgefront und nicht Moon Dome.
+Eigenständiges Browser-Spiel. **Entwicklungsversion**, kein Release. **Branch:** `feat/dev4-factory-conveyors-offense`. Nicht mit Forgefront oder dem früheren Moon Dome verwechseln.
 
-## Funktionen
-- DEV1: Karte, Erzvorkommen, Minen, Hauptfabrik, selbst gezeichnete und zerstörbare Versorgungswege, Baumenü, Schaden, Reparatur, Rückgängig.
-- DEV2: Automatische Erzförderung, gemeinsame Ressourcenbestände, automatische 50:50-Produktion von Munition und Baumaterial, Lagergrenzen, zusätzliche Fabriken und Baukosten.
-- DEV3: MG-Geschütze mit Netzanschluss und tatsächlichem Munitionsverbrauch, gezielte feindliche Infrastrukturangriffe, drei stärker werdende Wellen, zeitgesteuerter oder vorzeitiger Wellenstart, Reparaturen während des Angriffs, Sieg oder Niederlage.
+## So funktioniert der neue Prototyp
 
-## Spielen
+1. **Gelbe Erzbänder** verbinden Erzminen mit Fabriken. Eine erste Fabrik und Mine plus zwei gelbe Bandfelder sind auf der Karte vorhanden.
+2. Fabriken verwandeln Erz automatisch 50:50 in **Munition und Baumaterial**. Beide Bestände haben Grenzen; volle Bestände lenken den Output auf das andere Produkt um.
+3. **Blaue Munitionsbänder** verbinden Fabriken mit MGs. Ein blaues Startfeld liegt an der ersten Fabrik. Setze z. B. ein MG bei `(3,5)`, direkt neben diesem blauen Feld. Gelbe und blaue Bänder verbinden sich nie und können nicht dieselbe Rasterzelle belegen.
+4. Gegner greifen die Infrastruktur in drei zunehmend starken Wellen an. Reparieren ist auch während der Angriffe möglich.
+5. Bestelle über **„Angriffseinheit“** neue Einheiten. Sie werden vier Sekunden lang in einer lebenden Fabrik produziert und steuern automatisch den rechts liegenden **Gegnerbunker** an. Sieg durch Zerstörung des Bunkers, Niederlage sobald keine Fabrik mehr intakt ist.
 
-**Wichtig:** Alle Werte sind Testannahmen. Verteidige HQ, Mine und Versorgungswege; ein einzelnes MG reicht in der Referenzsimulation auf Dauer nicht aus. Mehrere MGs müssen sinnvoll an das Netz angebunden sein.
+Das **HQ ist vollständig entfernt**. Mehrere Fabriken können erhalten bleiben; der Verlust einer einzelnen Fabrik beendet das Spiel nicht. Erz/Munition werden je Fabrik getrennt bevorratet, und ein MG darf nur aus einer über blaue Bänder angeschlossenen Fabrik schießen. Baumaterial ist für den DEV4-Prototyp weiterhin ein **globaler abstrakter Bauvorrat**, nicht als Förderband umgesetzt.
 
-Webserver starten:
+### Start
+
+Am einfachsten `preview.html` im Browser öffnen. Alternativ auf einem statischen Webserver die normale ES-Modul-Version starten:
 
 ```bash
 python3 -m http.server 8000
-# http://localhost:8000/
+# http://localhost:8000
 ```
 
-Für lokale Vorschau ohne Webserver:
+### Tests und Vorschau erstellen
 
 ```bash
-node tools/build-preview.mjs
-# preview.html direkt öffnen
+npm test                 # 41 DEV4-Logik- und Regressionstests
+npm run preview          # portable preview.html erzeugen
+python3 tests/browser_dev4.py   # Chromium/Playwright erforderlich
 ```
 
-## Testen
+Die früheren DEV1-3-Testdateien bleiben als **historische Prüfszenarien** erhalten; wegen der bewusst aufgegebenen HQ-Architektur sind ihre alten Erwartungen nicht mehr gültig. Die aktuelle Testsuite deckt die weiter gültigen Funktionen erneut ab.
 
-```bash
-npm test
-```
+## Grenzen
 
-Zusätzlich kann der rein lokale Browser-Test `python3 tests/browser_dev3.py` ausgeführt werden (Playwright mit installiertem Chromium erforderlich). Er lädt die gebaute Einzeldatei ohne Webserver in den Testbrowser. Ein echter Smartphone-Gerätetest ist weiterhin offen.
+Zahlenwerte, Wellen, Baukosten, Bewegung und Kampf sind **Testannahmen**. Kampfeinheiten steuern in DEV4 ausschließlich den einzigen Bunker als automatisch vorgegebenes Ziel an. Mehrere Missionen, freie Angriffszielwahl, Forschung und echte Kampagnenprogression sind noch **nicht implementiert**. Keine echte Smartphone-Hardwareprüfung. Keine Merge-/Release-Freigabe auf `main`.
 
-## Projektgedächtnis
-- `docs/GAME_DESIGN.md` – Spielkonzept
-- `docs/DECISIONS.md` – verbindliche Entscheidungen
-- `docs/DEVELOPMENT_STATUS.md` – reale Implementierung und Tests
-- `docs/TASKS.md` – offene Arbeit
-
-**Nicht implementiert:** Produzierbare Angriffseinheiten, feindlicher Bunker und aktive Missionsziele (DEV4), übergreifende Kampagne und echte Meta-Progression. Kein Merge nach `main` ohne Freigabe.
+Dokumentation: [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md), [`docs/DECISIONS.md`](docs/DECISIONS.md), [`docs/DEVELOPMENT_STATUS.md`](docs/DEVELOPMENT_STATUS.md), [`docs/TASKS.md`](docs/TASKS.md).

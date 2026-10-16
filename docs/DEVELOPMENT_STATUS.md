@@ -1,41 +1,41 @@
-# FactoryDefense – Entwicklungsstand
+# FactoryDefense – Projektstand DEV4
 
 **Datum:** 2026-10-16  
-**Repository:** Karlel0815/FactoryDefense  
-**Referenz:** `feat/dev2-economy` / `3d79ced14d8753155468a660512606b9f8a1a621` (DEV2, dokumentiertes Spielerfeedback)  
-**Arbeitsbranch:** `feat/dev3-defense-waves`  
-**Commit DEV3:** Siehe GitHub Branch-HEAD (nach Push eintragen).  
-**main:** Weiterhin alter Moon-Dome-Prototyp `a6649de5b3d7d7503ce4baf11a543218d39cf786`, kein Merge.
+**Repository:** `Karlel0815/FactoryDefense`  
+**Entwicklungsbranch:** `feat/dev4-factory-conveyors-offense`  
+**Referenz DEV3-Dokumentationsstand:** `60fc8298d6e6370a9a8c028bc157f416878cc6e8`  
+**DEV4-Commit:** siehe den aktuellen Commit des Entwicklungsbranches  
+**main:** alter Moon-Dome-Stand; absichtlich nicht überschrieben. Forgefront unverändert.
 
 ## IMPLEMENTIERT
-Alle DEV1/DEV2-Module und Funktionen erhalten. DEV3 ergänzt:
-- Einfache MG-Bauoption, Materialkosten, Netzwerkgebundenheit, Reichweite, echte Munition je Schuss, Projektilspur, Schaden an Gegnern.
-- Feindliche Angriffswellen mit festen Prototyp-Spawns und zunehmender Gegnerzahl/Zähigkeit. Gegner zielen autonom auf Fabriken, Minen, Türme, HQ und Transportwege (netzfokussierte Gegner).
-- Wellen 1–3; zunächst automatische Vorbereitung mit freiwilligem früherem Start, automatische Pausen zwischen Wellen.
-- Angriffe senken Gebäude-/Wege-Lebenspunkte; Wegzerstörung trennt das Versorgungsnetz; Reparatur gegen Baumaterial ist auch **während Angriffen** erlaubt.
-- Sieg nach drei tatsächlich abgewehrten Wellen; Niederlage nach Zerstörung des HQ; Neustart möglich.
-- Undo während Angriffsphasen gesperrt und Historie an Phasenübergängen geleert, um Rücknahme von Kampfschäden zu verhindern.
 
-## TESTERGEBNISSE
-- Node-Tests DEV1/DEV2/DEV3 lokal bestanden: **35/35** (21 Regression + 14 DEV3).
-- Automatisierter Browser-Smoke: Desktop + emuliertes Touch-Gerät mit Inline-Einzeldatei geprüft; Bau, Ressourcenänderung, Wellenstart, Gegner-Anzeige und Undo-Sperre. **Bestanden**.
-- Szenariosimulation: 0 oder 1 MG führt zum Verlust; 2 an das Netz angeschlossene MGs gewinnen gegen alle drei Wellen ohne Eingriffe. Ergebnis nur für das feste Testlayout, **nicht** allgemeines Balancing.
-- Lokaler Server-/`file://`-Aufruf der regulären App im automatisierten Browser wurde durch Sandbox-Navigationsregeln blockiert; Browser-Test erfolgte mit `set_content` aus der Einzeldatei. **Keine** allgemeine Browserkompatibilität daraus behaupten.
-- Reales Smartphone und benutzerseitiger vollständiger Spieltest: **OFFEN**.
-- GitHub CI-Status: nach Upload gesondert prüfen, nicht automatisch als bestanden ausgeben.
+- Das HQ wurde aus der Startkarte und aus Netz-, Wirtschaft-, Darstellungs- und Verlustlogik entfernt. Erste Fabrik (`factory-1`) mit Startmine und Startverbindung.
+- **Niederlage erst bei Zerstörung aller Fabriken**; eine zweite intakte Fabrik ermöglicht Weiterspielen. Absichtliches Entfernen der letzten intakten Fabrik ist gesperrt.
+- Zwei logisch unabhängige, zerstörbare Bandtypen: `ore` (gelb) für Mine → Fabrik, `ammo` (blau) für Fabrik → MG. Verschiedene Typen dürfen sich nicht überlagern und verbinden sich nicht miteinander, auch bei direkter Nachbarschaft. Beide verwenden die zuvor eingeführte Raster-/Touch-Zeichenlogik.
+- Fabrikbezogene Erz- und Munitionsbestände, global aggregiert im HUD. Erzmine wird genau einer erreichbaren Fabrik zugeordnet. MG kann nur Munition erreichbarer Fabriken beziehen; keine Munitionsübertragung über unverbundene Inseln. **Baumaterial als gemeinsamer abstrakter Vorrat** ist eine bewusste, vorläufige DEV4-Vereinfachung.
+- 50:50-Produktion, Rückumleitung bei vollem Vorrat, Materialkosten, Reparaturen in jeder Phase, Bänderabriss und -neubau sowie Debugschaden.
+- Drei feindliche Angriffswellen, Infrastruktur-Zielwahl, Geschütze mit Munitionsverbrauch, zeitgesteuerter oder früherer Wellenstart.
+- Bunker am rechten Kartenrand als Missionsziel, Angriffseinheiten auf Bestellung (Kosten, Bauzeit, Warteschlange max. 3). Die Einheiten laufen und kämpfen autonom. Gegnerischer Bunker kann Einheiten beschädigen.
+- Sieg bei Bunkerzerstörung; nach drei abgewehrten Wellen bleibt die Mission bestehen, bis der Bunker zerstört ist. Alte Wellen-Sieg-Regel ersetzt.
 
-## OFFEN / KRITISCH
-- Kein offensiver Missionsabschluss oder Meta-Progression – erst DEV4.
-- Turm-/Gegnerparameter und drei Wellen sind Testwerte und noch nicht vom Spieler gebalanced.
-- Gegner laufen derzeit direkt zum Zielpunkt; komplexe Hindernisnavigation wurde bewusst nicht implementiert.
-- Wirtschaftlicher Softlock nach vollständiger Zerstörung und Materialmangel bleibt möglich; Critic-Review vor DEV4 notwendig.
-- Für 20x12 Raster sind einzelne Touch-Zellen auf kleinen Smartphones weiterhin relativ klein.
-- Debug-Schadenswerkzeug bleibt im Testbuild verfügbar, nicht für Release vorgesehen.
+## TESTS
+
+- `npm test`: **41/41 bestanden** – neue suite mit Raster-/Touch-Koordinaten, Bandtypen-Trennung, Netz-Zerfall, Wirtschaft, isolierten Fabriken, Munition, Reparaturen, Angriffseinheiten, Gegnern, Missionssieg, Niederlage, Grenzfällen und Belastungstest.
+- Chromium/Playwright-Browser-Test per portabler `preview.html`: **Desktop und simuliertes Touch-Gerät bestanden**. Keine erfassten JavaScript-Ausnahmen. Bau eines verbundenen MGs, blockierte falsche Bandplatzierung, Einheitenbestellung, Wellenstart und Undo-Sperre erfolgreich.
+- Balancing-Simulation: Zwei Einheiten derselben Fabrik können den Bunker zerstören, eine allein nicht (unter festen Testbedingungen). Keine allgemein gültige Balance nachgewiesen.
+- Alter DEV1/DEV2/DEV3-Testcode bleibt im Repository als Geschichte, wird wegen seiner expliziten HQ- und Ein-Netz-Annahmen nicht mehr ausgeführt; die neue Suite ersetzt ihn funktional.
+- **GitHub Actions**: Erfolgsstatus erst nach tatsächlich geprüftem Lauf als bestätigt vermerken.
+- **Realgerätetest / realer Smartphone-Spielablauf: OFFEN.** Automatisierter Browser-Test benutzt Emulation statt echter Hardware.
+
+## OFFEN / CRITIC
+
+- Prototyp ist noch keine ausgeglichene Kampagne: Angriffseinheiten haben nur den einen Bunker als Ziel. Mehr Missionen, freie Zielauswahl, Forschung und Meta-Progression fehlen.
+- Gemeinsames Baumaterial bleibt eine abstrakte Designvereinfachung; für vollständig lokal begrenzte Fabrikinseln müsste auch dieses System netzbezogen modelliert werden. Keine offensichtliche Erz-/Munitions-Teleportation.
+- Risiko wirtschaftlicher Sackgasse nach Verlust von Material und Förderbändern; Restart ist vorhanden, eine Rettungsmechanik nicht.
+- Touch-Zielgrößen auf 20 Spalten teilweise klein, reale Smartphone-Abnahme offen.
+- Ungültige ältere Tests sind zur Rückverfolgbarkeit erhalten, nur die neue aktive DEV4-Testsuite ist für den geänderten Vertrag maßgeblich.
+- Kein Save/Load, keine komplexe Hinderniswegfindung, keine feste Release-Freigabe und kein Merge nach `main`.
 
 ## NÄCHSTER SCHRITT
-Spielvorschau vom Nutzer testen lassen. Nach Feedback Anpassungen vornehmen und erst dann DEV4 freigeben. `main` und Forgefront nicht ändern.
 
-## NEUE BESCHLÜSSE nach DEV3 – noch NICHT implementiert
-Der Nutzer hat festgelegt: HQ vollständig entfernen; Produktionsfabriken übernehmen die Netzversorgung; Niederlage sobald **keine intakte Fabrik mehr vorhanden** ist. Die Soll-Kette ist Mine → Fabrik → MG über das vorhandene, verwundbare Wegenetz. **DEV3 enthält weiterhin HQ-basierte Logik** in `src/network.js`, `src/model.js`, `src/economy.js` und `src/combat.js`. Diese Funktionen gelten nur als IMPLEMENTIERT nach altem Stand und müssen in einem gesondert freigegebenen Änderungsbranch überarbeitet und mit neuen Regressionstests geprüft werden.
-
-**Critic-Risiko:** Bisherige zentrale Bestände dürfen bei mehreren getrennten Fabriknetzen keine magische netzübergreifende Versorgung erzeugen. Datenmodell und Benutzeranzeige entsprechend spezifizieren. Noch keine Codeänderung durch diesen Dokumentationscommit.
+DEV4-Preview durch Nutzer spielen lassen und dabei Produktionswege, Verteidigung und Bunkerangriff prüfen. Danach Balancing und weitere Kampagnenziele diskutieren.

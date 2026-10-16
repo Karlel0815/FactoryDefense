@@ -1,75 +1,57 @@
 import { inBounds, key } from './grid.js';
-import { CAPS, COSTS, START_RESOURCES, takeMaterial, salvageMaterial } from './economy.js';
-
+import { CAPS, COSTS, START_RESOURCES, takeMaterial, salvageMaterial, syncTotals } from './economy.js';
+import { beltAt } from './network.js';
 export const MAX_HP = 3;
-export const MODES = ['road', 'mine', 'factory', 'turret', 'erase', 'repair', 'damage'];
+export const MODES = ['ore', 'ammo', 'mine', 'factory', 'turret', 'erase', 'repair', 'damage'];
+export const makeFactory = (id,x,y) => ({id,type:'factory',x,y,hp:MAX_HP,store:{ore:0,ammo:0}});
 
 export function createGame() {
-  return {
-    width: 20, height: 12,
-    ores: new Set([key(5, 6), key(9, 2), key(11, 9), key(16, 4)]),
-    roads: new Map([[key(3, 6), MAX_HP], [key(4, 6), MAX_HP]]),
-    buildings: [
-      { id: 'hq', type: 'hq', x: 2, y: 6, hp: MAX_HP },
-      { id: 'mine-1', type: 'mine', x: 5, y: 6, hp: MAX_HP }
-    ],
-    resources: { ...START_RESOURCES },
-    nextId: 2
-  };
+ const game={
+   width:20,height:12,
+   ores:new Set(['5,6','9,2','11,9','16,4']),
+   belts:{ore:new Map([['3,6',MAX_HP],['4,6',MAX_HP]]),ammo:new Map([['2,5',MAX_HP]])},
+   buildings:[makeFactory('factory-1',2,6),{id:'mine-1',type:'mine',x:5,y:6,hp:MAX_HP}],
+   resources:{...START_RESOURCES},nextId:2
+ };
+ return game;
 }
-
-export const copyGame = state => ({
-  ...state,
-  ores: new Set(state.ores),
-  roads: new Map(state.roads),
-  buildings: state.buildings.map(b => ({ ...b })),
-  resources: { ...state.resources }
+export const copyGame = s=>({
+ ...s,ores:new Set(s.ores),
+ belts:{ore:new Map(s.belts.ore),ammo:new Map(s.belts.ammo)},
+ buildings:s.buildings.map(b=>({...b,store:b.store?{...b.store}:undefined})),
+ resources:{...s.resources}
 });
-
 export function applyAction(state, mode, x, y) {
-  if (!MODES.includes(mode) || !inBounds(x, y, state.width, state.height)) return false;
-  const tile = key(x, y);
-  const building = state.buildings.find(b => b.x === x && b.y === y);
-  const roadHP = state.roads.get(tile);
-  if (mode === 'road') {
-    if (building || state.ores.has(tile) || roadHP > 0 || !takeMaterial(state, mode)) return false;
-    state.roads.set(tile, MAX_HP); // Rebuild completely destroyed roads.
-    return true;
-  }
-  if (mode === 'mine' || mode === 'factory' || mode === 'turret') {
-    if (building || roadHP !== undefined || (mode === 'mine') !== state.ores.has(tile) || !takeMaterial(state, mode)) return false;
-    state.buildings.push({ id: `${mode}-${state.nextId++}`, type: mode, x, y, hp: MAX_HP });
-    return true;
-  }
-  if (mode === 'erase') {
-    if (building && building.type !== 'hq') {
-      salvageMaterial(state, building.type, building.hp);
-      state.buildings = state.buildings.filter(b => b.id !== building.id);
-      return true;
-    }
-    if (roadHP !== undefined) {
-      salvageMaterial(state, 'road', roadHP);
-      state.roads.delete(tile);
-      return true;
-    }
-    return false;
-  }
-  // Only the test tool can damage things. DEV3 will use combat damage directly.
-  if (mode === 'damage') {
-    if (building && building.hp > 0) { building.hp--; return true; }
-    if (roadHP > 0) { state.roads.set(tile, roadHP - 1); return true; }
-    return false;
-  }
-  if (mode === 'repair') {
-    if (building?.hp > 0 && building.hp < MAX_HP) {
-      if (!takeMaterial(state, mode)) return false;
-      building.hp = Math.min(MAX_HP, building.hp + 1); return true;
-    }
-    if (roadHP > 0 && roadHP < MAX_HP) {
-      if (!takeMaterial(state, mode)) return false;
-      state.roads.set(tile, Math.min(MAX_HP, roadHP + 1)); return true;
-    }
-    return false;
-  }
-  return false;
+ if(!MODES.includes(mode)||!inBounds(x,y,state.width,state.height))return false;
+ if(x===18&&y===6)return false; // Enemy bunker tile stays reserved.
+ const tile=key(x,y),b=state.buildings.find(v=>v.x===x&&v.y===y);
+ const type=beltAt(state,x,y),hp=type?state.belts[type].get(tile):undefined;
+ if(mode==='ore'||mode==='ammo') {
+   if(b||state.ores.has(tile)|| (type && (type!==mode||hp>0)) || !takeMaterial(state,mode))return false;
+   state.belts[mode].set(tile,MAX_HP);return true;
+ }
+ if(['mine','factory','turret'].includes(mode)) {
+   if(b||type || ((mode==='mine')!==state.ores.has(tile)) || !takeMaterial(state,mode))return false;
+   const id=`${mode}-${state.nextId++}`;
+   state.buildings.push(mode==='factory'?makeFactory(id,x,y):{id,type:mode,x,y,hp:MAX_HP});return true;
+ }
+ if(mode==='erase') {
+   if(b){
+     if(b.type==='factory'&&state.buildings.filter(v=>v.type==='factory'&&v.hp>0).length<=1&&b.hp>0)return false;
+     salvageMaterial(state,b.type,b.hp);
+     state.buildings=state.buildings.filter(v=>v.id!==b.id);syncTotals(state);return true;
+   }
+   if(type){salvageMaterial(state,type,hp);state.belts[type].delete(tile);return true;}
+   return false;
+ }
+ if(mode==='damage') {
+   if(b&&b.hp>0){b.hp=Math.max(0,b.hp-1);return true;}
+   if(type&&hp>0){state.belts[type].set(tile,Math.max(0,hp-1));return true;}return false;
+ }
+ if(mode==='repair') {
+   if(b&&b.hp>0&&b.hp<MAX_HP){if(!takeMaterial(state,mode))return false;b.hp=Math.min(MAX_HP,b.hp+1);return true;}
+   if(type&&hp>0&&hp<MAX_HP){if(!takeMaterial(state,mode))return false;state.belts[type].set(tile,Math.min(MAX_HP,hp+1));return true;}
+   return false;
+ }
+ return false;
 }
