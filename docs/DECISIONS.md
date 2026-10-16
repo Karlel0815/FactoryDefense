@@ -68,7 +68,18 @@ Diese Entscheidungen **ersetzen** bisherige Aussagen, dass ein HQ als Netzquelle
 
 **Ersetzt:** Ein einziges, neutrales Wegenetz aus DEV1–DEV3. Die ab DEV4 erprobten gelben und blauen Bänder sind nun getrennte Systeme. Das HQ entfällt entsprechend FD-018, letzte Fabrik verloren entsprechend FD-019. 
 
-**Implementierte DEV4-Testannahmen, nicht endgültig beschlossen:** Kein Überlappen beider Bandtypen auf einem Feld; Erz/Munition bleiben je Fabrik bevorratet, Baumaterial ist global; eine Mine wird genau einer versorgenden Fabrik zugeordnet; jede versorgte MG-Einheit darf Munition aus einer erreichbaren Fabrik entnehmen; Angriffseinheiten zielen vorerst nur auf den einzelnen Bunker. Produktions-/Kampfzahlen weiterhin offen für Balancing. 
+**Historische DEV4-Testannahmen, teilweise ersetzt durch FD-024/FD-025:** Kein Überlappen beider Bandtypen auf einem Feld (durch definierte Brückenkreuzung ersetzt); Erz/Munition bleiben je Fabrik bevorratet, Baumaterial ist global; eine Mine wird genau einer versorgenden Fabrik zugeordnet; jede versorgte MG-Einheit darf Munition aus einer erreichbaren Fabrik entnehmen; Angriffseinheiten zielen vorerst nur auf den einzelnen Bunker. Produktions-/Kampfzahlen weiterhin offen für Balancing. 
 
 ## DEV4.1 – verbindlicher Spielstart (BESCHLOSSEN)
 Der Spieler kann vor Welle 1 **unbegrenzt bauen**, finanziert aus dem vorhandenen Startbaumaterial. Die Zeit läuft nicht herunter. **Alle Produktion und Erzförderung stehen still, bis die erste Welle manuell gestartet wurde.** Auch Angriffseinheiten können davor nicht produziert/bestellt werden. Die automatische Vorbereitungszeit gilt erst ab der **zweiten** Welle. Diese neue Regel ersetzt den alten automatischen Start der ersten Welle.
+
+## DEV4.2 – Förderbandbrücken und Auslastung, 16.10.2026
+
+| ID | Status | Entscheidung |
+|---|---|---|
+| FD-024 | BESCHLOSSEN | **Erz- und Munitionsband dürfen sich über Brücken kreuzen**, ohne ihre Netze zu verbinden oder Waren zu vermischen. Dies ersetzt ausdrücklich das bisherige Verbot, beide Medien über demselben Rasterfeld zu führen. |
+| FD-025 | BESCHLOSSEN | **Minen und Fabriken zeigen ihre Auslastung in Prozent direkt auf der Karte**, wie in Forgefront. Vor Beginn der ersten Welle ist die Produktion angehalten; die Anzeige lautet dann „PAUSE“ statt „0 %“. |
+
+**IMPLEMENTIERT:** Automatische rechtwinklige Brücken ohne eigenes Bauwerkzeug; Unterband muss gerade verlaufen, das zweite Medium wird über die Brücke geführt. Durchlauf in jeweils eigener Richtung ohne Seiteneinstiege im Kreuzungsfeld. Der tatsächliche Durchsatz der Mine/Fabrik wird im Simulationsschritt erfasst; die Anzeige auf dem Gebäude ergänzt eine antippbare Infoleiste mit Engpasshinweisen.
+
+**OFFEN:** Abweichende Brückenbaukosten oder Robustheit; aktuell gelten normale Bandkosten/HP als Testannahme. Endgültiges Balancing und Smartphone-Abnahme.
