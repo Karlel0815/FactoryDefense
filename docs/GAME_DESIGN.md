@@ -69,3 +69,6 @@ Bei mehreren voneinander getrennten Fabriknetzen dürfen Erz und Munition nicht 
 **Offensive:** Einheiten werden per Knopfdruck gegen Baumaterial mit Bauzeit bestellt, entstehen bei einer intakten Fabrik und greifen den sichtbaren Gegnerbunker automatisch an. Der Bunker wehrt sie ab. Der prototypische Missionssieg erfolgt bei Bunkerzerstörung; drei abgewehrte Wellen ohne Bunkerzerstörung reichen **nicht** mehr für den Sieg.
 
 **OFFEN:** Freie Zieleingabe, verschiedene Missionsziele/Kampagnen, Meta-Progression, vollständige Lager-/Logistikbalance, Softlock-Schutz und Smartphone-Feinbedienung. Alle Kosten, Wellenwerte, Reichweiten und Bauzeiten sind weiterhin vorläufig.
+
+## DEV4.1 – Bauphase ohne Produktion (BESCHLOSSEN)
+Vor der ersten Welle wird nicht automatisch gestartet: Der Spieler legt Bänder, Minen, Fabriken und MGs in Ruhe mit dem Startmaterial an. **Vor Klick auf „Welle 1 starten“ pausieren Erzförderung, Munition, Baumaterialerzeugung und Produktion von Angriffseinheiten vollständig.** Der Klick startet die erste Welle und das Wirtschaftssystem zusammen. Ab Welle 2 gilt der automatische Vorbereitungs-Countdown (mit Frühstartmöglichkeit). Dies ersetzt alte Formulierungen über einen automatischen Start von Welle 1.
