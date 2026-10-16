@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1723" />
+  <title>FactoryDefense – DEV1</title>
+  <link rel="stylesheet" href="src/style.css" />
+  <script type="module" src="src/game.js"></script>
+</head>
+<body>
+<main class="app">
+  <header>
+    <div><h1>FACTORY<span>DEFENSE</span></h1><p>DEV1 · RASTER & VERSORGUNG</p></div>
+    <button id="reset" class="quiet" type="button">Neustart</button>
+  </header>
+  <section class="hud" aria-label="Netzstatus">
+    <div><small>Minen verbunden</small><strong id="connected">1 / 1</strong></div>
+    <div><small>Wege im Netz</small><strong id="roads">2 / 2</strong></div>
+    <div><small>Status</small><strong id="status">Bereit</strong></div>
+  </section>
+  <div class="board-wrap">
+    <canvas id="board" width="1000" height="600" tabindex="0" aria-label="Baukarte, Raster mit Hauptfabrik, Erzen, Minen und Wegen"></canvas>
+  </div>
+  <p class="hint" id="hint" role="status" aria-live="polite">Ziehe mit dem Werkzeug „Weg“ über freie Felder. Tippe auf ein Erzfeld, um dort eine Mine zu errichten.</p>
+  <nav class="toolbar" aria-label="Bauwerkzeuge">
+    <button type="button" data-mode="road" aria-pressed="true">🟩 Weg</button>
+    <button type="button" data-mode="mine" aria-pressed="false">⛏ Mine</button>
+    <button type="button" data-mode="erase" aria-pressed="false">⌫ Entfernen</button>
+    <button type="button" data-mode="repair" aria-pressed="false">🔧 Reparatur</button>
+    <button type="button" data-mode="damage" aria-pressed="false">⚡ Testschaden</button>
+  </nav>
+  <div class="footer-actions"><button id="undo" type="button" disabled>↶ Rückgängig</button><span>DEV1: Bauen kostenlos · Kampf und Produktion folgen</span></div>
+  <p class="note">Grün: versorgter Weg oder angeschlossene Mine. Grau: vom HQ getrennt. Rot: beschädigt oder zerstört. Die Funktion „Testschaden“ simuliert einzelne Treffer. Zerstörte Wege mit „Weg“ neu bauen.</p>
+</main>
+</body>
+</html>

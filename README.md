@@ -1,19 +1,34 @@
-# FactoryDefense – eigenständiges Fabrik-Verteidigungsspiel
+# FactoryDefense – DEV1 Raster & Versorgungsnetz
 
-**Status:** Konzept beschlossen, technische Vorbereitung; noch kein spielbarer Build des neuen Spiels.
+**Eigenständiges Fabrik-Verteidigungsspiel.** Nicht Forgefront und nicht Moon Dome.
 
-Dieses Repository wurde am 16.10.2026 aus dem ehemaligen Moon-Dome-Repository für ein **neues eigenständiges Spiel** neu ausgerichtet. Die alte Moon-Dome-Version bleibt über die Git-Historie / den bisherigen `main`-Branch rückholbar, gehört jedoch **nicht** zu FactoryDefense.
+## Aktueller Stand
+DEV1-Prototyp: Rasterkarte, sichtbare Erzfelder, Hauptfabrik und Startmine, Minen bauen, Versorgungswege mit Maus/Finger zeichnen, Verbundenheit anzeigen, Wege/Minen entfernen, simulierten Schaden setzen, beschädigte Anlagen reparieren, zerstörte Wege neu bauen, Rückgängig und Neustart. **Noch keine Produktion, Wellen oder Kampfeinheiten.** Bauen kostet in DEV1 keine Ressourcen.
 
-## Spielidee
-Erz fördern, automatisch Munition und Baumaterial herstellen, Minen über selbst gezeichnete, verwundbare Versorgungswege verbinden, Verteidigung aufbauen und Angriffswellen überstehen. Mit auf Bestellung produzierten Kampfeinheiten lassen sich aktive Missionsziele wie ein gegnerischer Bunker angreifen. Mehrere Missionen führen zu einem erreichbaren Kampagnenabschluss.
+## Starten
+Ein statischer Webserver ist für ES-Module nötig (einfaches Öffnen über file:// kann Browser-CORS auslösen):
 
-## Technologie
-JavaScript, HTML, CSS, 2D-Canvas; möglichst wenige Abhängigkeiten. Browser auf Desktop und Smartphone.
+```bash
+python3 -m http.server 8000
+# Dann http://localhost:8000/
+```
 
-## Projektinformationen
-- [Spieldesign](docs/GAME_DESIGN.md)
-- [Verbindliche Entscheidungen](docs/DECISIONS.md)
-- [Entwicklungsstand](docs/DEVELOPMENT_STATUS.md)
-- [Aufgaben und Testplan](docs/TASKS.md)
+## Testen
+```bash
+npm test
+```
+Ohne externe Node-Pakete. Chromium-Browsertest konnte im Entwicklungscontainer wegen Administrator-Navigationssperre nicht abgeschlossen werden. Reale Touch-/Smartphone-Tests sind **offen**.
 
-**Achtung:** Noch kein Game-Code für FactoryDefense implementiert oder getestet. Die Aufnahme neuer Features benötigt separate Freigabe. Forgefront ist ein anderes Repository und bleibt unangetastet.
+## Wichtige Dateien
+- `index.html` – Start
+- `src/game.js` – Canvas-Bedienung und Anzeige
+- `src/grid.js` – Raster / Streichlinien
+- `src/model.js` – Bauen, Entfernen, Schaden, Reparatur
+- `src/network.js` – Versorgung über verbundene Straßen
+- `tests/dev1.test.mjs` – automatisierte Logiktests
+- `docs/GAME_DESIGN.md`, `docs/DECISIONS.md` – Spielregeln
+- `docs/DEVELOPMENT_STATUS.md` – tatsächlicher Entwicklungsstand
+- `docs/TASKS.md` – nächste Schritte
+
+## Sicherheit
+Das Repository wurde aus dem früheren Moon Dome umbenannt. **Die Vorgängerhistorie bleibt erhalten.** Ein neuer Entwicklungsbranch `feat/dev1-grid-network` enthält FactoryDefense. `main` bleibt bis expliziter Freigabe auf dem ehemaligen Moon-Dome-Stand.
