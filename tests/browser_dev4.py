@@ -17,6 +17,26 @@ with sync_playwright() as p:
   assert 'Produktion pausiert' in page.locator('#wave-status').inner_text()
   assert page.locator('#order-unit').is_disabled()
   assert 'Welle 1 starten' in page.locator('#wave-button').inner_text()
+  # Inspect a building before the first wave: show PAUSE, never false 0% utilization.
+  def tapcell(x,y):
+   page.locator('#board').scroll_into_view_if_needed()
+   rect=page.locator('#board').bounding_box()
+   px=rect['x']+rect['width']*((x+.5)/20)
+   py=rect['y']+rect['height']*((y+.5)/12)
+   if ismobile:page.touchscreen.tap(px,py)
+   else:page.mouse.click(px,py)
+  page.locator('[data-mode="inspect"]').click();tapcell(2,6)
+  assert 'Pausiert' in page.locator('#inspection').inner_text(),page.locator('#inspection').inner_text()
+  assert not errors,errors
+  # Build a straight yellow ore conveyor, then draw blue ammo over it.
+  page.locator('[data-mode="ore"]').click()
+  for x in [6,7,8]:tapcell(x,4)
+  page.locator('[data-mode="ammo"]').click()
+  for y in [3,4,5]:tapcell(7,y)
+  # Blue over yellow should charge the same as a normal segment.
+  assert not errors,errors
+  # Tap upper belt with eraser; underlying ore lane must still exist.
+  # Its preservation is also checked in model tests.
   # First blue ammo belt already beside factory; MG cell 3,5 touches its end.
   page.locator('[data-mode="turret"]').click();page.locator('#board').scroll_into_view_if_needed()
   rect=page.locator('#board').bounding_box()
@@ -38,6 +58,8 @@ with sync_playwright() as p:
   page.wait_for_timeout(500)
   assert page.locator('#ore').inner_text().split('/')[0].strip()=='0.0'
   page.locator('#wave-button').click();page.wait_for_timeout(360)
+  page.locator('[data-mode="inspect"]').click();tapcell(2,6)
+  assert '%' in page.locator('#inspection').inner_text(),page.locator('#inspection').inner_text()
   assert float(page.locator('#ore').inner_text().split('/')[0])>0
   page.locator('#order-unit').click();page.wait_for_timeout(100)
   assert '1 im Bau' in page.locator('#unit-status').inner_text(),page.locator('#unit-status').inner_text()
