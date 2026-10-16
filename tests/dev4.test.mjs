@@ -4,7 +4,7 @@ import {inBounds,lineCells,positionToCell,neighbors} from '../src/grid.js';
 import {createGame,copyGame,applyAction,MAX_HP} from '../src/model.js';
 import {analyzeNetwork,beltAt} from '../src/network.js';
 import {tickEconomy,CAPS,COSTS,consumeAmmo,syncTotals} from '../src/economy.js';
-import {COMBAT,createCombat,tickCombat,startWave,orderUnit,chooseTarget,hurtInfrastructure} from '../src/combat.js';
+import {COMBAT,createCombat,tickCombat,tickGame,startWave,orderUnit,chooseTarget,hurtInfrastructure} from '../src/combat.js';
 const eq=(a,b)=>assert.ok(Math.abs(a-b)<1e-6,`${a} differs from ${b}`);
 const advance=(s,c,seconds)=>{for(let i=0;i<seconds*10;i++){tickEconomy(s,.1);tickCombat(s,c,.1);}};
 const mkMG=(s,x=3,y=5)=>{assert.equal(applyAction(s,'turret',x,y),true);return s.buildings.find(b=>b.type==='turret'&&b.x===x&&b.y===y)};
@@ -42,12 +42,12 @@ test('two factories do not duplicate mine output',()=>{const s=createGame();appl
 test('detached network ammo remains at original factory (no teleportation)',()=>{const s=createGame();applyAction(s,'factory',10,6);const b=s.buildings.find(b=>b.id==='factory-2');b.store.ammo=5;syncTotals(s);const t=mkMG(s);assert.equal(consumeAmmo(s,analyzeNetwork(s).turretProviders.get(t.id),1),null);eq(s.resources.ammo,5);});
 test('connected MG consumes local factory ammo and hits enemy',()=>{const s=createGame(),c=createCombat(),t=mkMG(s);firstFactory(s).store.ammo=5;syncTotals(s);startWave(c);c.enemies=[{id:5,x:4.5,y:5.5,hp:3,maxHp:3,focus:'structure',attackClock:0}];c.spawned=3;tickCombat(s,c,.1);eq(s.resources.ammo,4);assert.equal(c.enemies[0].hp,2);});
 test('enemy prioritizes nearby infrastructure and both belt types can be damaged',()=>{const s=createGame();const enemy={x:4.5,y:6.5,focus:'network'};const target=chooseTarget(s,enemy);assert.ok(['ore','ammo','building'].includes(target.type));assert.equal(hurtInfrastructure(s,{type:'ore',id:'3,6'},.6),true);eq(s.belts.ore.get('3,6'),2.4);assert.equal(hurtInfrastructure(s,{type:'ammo',id:'2,5'},.6),true);eq(s.belts.ammo.get('2,5'),2.4);});
-test('waves start after a countdown or manually, never twice',()=>{const s=createGame(),c=createCombat();tickCombat(s,c,.1);assert.equal(c.wave,0);assert.equal(startWave(c),true);assert.equal(startWave(c),false);const d=createCombat();for(let i=0;i<301;i++)tickCombat(s,d,.1);assert.equal(d.wave,1);});
+test('first wave never auto-starts and subsequent waves keep automatic countdown',()=>{const s=createGame(),c=createCombat();for(let i=0;i<1000;i++)tickGame(s,c,.1);assert.equal(c.phase,'ready');assert.equal(c.wave,0);assert.equal(c.countdown,0);assert.equal(startWave(c),true);assert.equal(c.wave,1);assert.equal(startWave(c),false);c.phase='prep';c.countdown=COMBAT.betweenWaves;for(let i=0;i<COMBAT.betweenWaves*10+1;i++)tickCombat(s,c,.1);assert.equal(c.wave,2);});
 test('repair possible during active wave',()=>{const s=createGame(),c=createCombat();startWave(c);hurtInfrastructure(s,{type:'building',id:'factory-1'},.5);assert.equal(applyAction(s,'repair',2,6),true);eq(firstFactory(s).hp,3);assert.equal(c.phase,'fight');});
-test('unit order spends material and is built asynchronously',()=>{const s=createGame(),c=createCombat(),before=s.resources.material;assert.equal(orderUnit(s,c,'factory-1'),true);eq(s.resources.material,before-COSTS.unit);assert.equal(c.units.length,0);for(let i=0;i<41;i++)tickCombat(s,c,.1);assert.equal(c.orders.length,0);assert.equal(c.units.length,1);});
-test('invalid unit orders and full queue rejected',()=>{const s=createGame(),c=createCombat();assert.equal(orderUnit(s,c,'not-a-factory'),false);assert.equal(orderUnit(s,c,'factory-1'),true);assert.equal(orderUnit(s,c,'factory-1'),true);assert.equal(orderUnit(s,c,'factory-1'),true);assert.equal(orderUnit(s,c,'factory-1'),false);});
+test('unit order spends material and is built asynchronously',()=>{const s=createGame(),c=createCombat(),before=s.resources.material;startWave(c);assert.equal(orderUnit(s,c,'factory-1'),true);eq(s.resources.material,before-COSTS.unit);assert.equal(c.units.length,0);for(let i=0;i<41;i++)tickCombat(s,c,.1);assert.equal(c.orders.length,0);assert.equal(c.units.length,1);});
+test('invalid unit orders and full queue rejected',()=>{const s=createGame(),c=createCombat();assert.equal(orderUnit(s,c,'not-a-factory'),false);startWave(c);assert.equal(orderUnit(s,c,'factory-1'),true);assert.equal(orderUnit(s,c,'factory-1'),true);assert.equal(orderUnit(s,c,'factory-1'),true);assert.equal(orderUnit(s,c,'factory-1'),false);});
 test('bunker is target and starts with health',()=>{const c=createCombat();eq(c.bunker.hp,COMBAT.bunkerHp);assert.equal(c.bunker.x,18.5);});
-test('own units move, shoot bunker and eventually win',()=>{const s=createGame(),c=createCombat();assert.equal(orderUnit(s,c,'factory-1'),true);assert.equal(orderUnit(s,c,'factory-1'),true);for(let i=0;i<1000&&c.phase!=='victory'&&c.phase!=='defeat';i++){tickCombat(s,c,.1);if(c.phase==='fight')for(const e of c.enemies)e.hp=0;}assert.equal(c.phase,'victory');assert.equal(c.bunker.hp,0);});
+test('own units move, shoot bunker and eventually win',()=>{const s=createGame(),c=createCombat();startWave(c);assert.equal(orderUnit(s,c,'factory-1'),true);assert.equal(orderUnit(s,c,'factory-1'),true);for(let i=0;i<1000&&c.phase!=='victory'&&c.phase!=='defeat';i++){tickCombat(s,c,.1);if(c.phase==='fight')for(const e of c.enemies)e.hp=0;}assert.equal(c.phase,'victory');assert.equal(c.bunker.hp,0);});
 test('three defended waves lead to bunker siege, NOT automatic win',()=>{const s=createGame(),c=createCombat();startWave(c);for(let wave=1;wave<=3;wave++){
  for(let i=0;i<1200&&c.phase==='fight';i++){tickCombat(s,c,.1);for(const e of c.enemies)e.hp=0;}
  assert.equal(c.phase,wave===3?'siege':'prep');if(wave<3)assert.equal(startWave(c),true);
@@ -55,3 +55,26 @@ test('three defended waves lead to bunker siege, NOT automatic win',()=>{const s
 test('invalid time never changes state, large dt capped',()=>{const s=createGame(),c=createCombat();const prev=structuredClone(c);for(const dt of [-1,0,NaN,Infinity])tickCombat(s,c,dt);assert.deepEqual(c,prev);const r=tickEconomy(s,20);eq(r.mined,2);});
 test('snapshots keep belts and stocks independent',()=>{const s=createGame(),copy=copyGame(s);applyAction(s,'damage',3,6);firstFactory(s).store.ammo=4;assert.equal(copy.belts.ore.get('3,6'),3);eq(copy.buildings[0].store.ammo,0);});
 test('long production run never generates negative or over-cap resource balances',()=>{const s=createGame();for(let i=0;i<1200;i++){tickEconomy(s,.1);for(const k of Object.keys(CAPS))assert.ok(s.resources[k]>=-1e-7&&s.resources[k]<=CAPS[k]+1e-7,`${k} invalid ${s.resources[k]}`);}});
+
+test('no resource production, combat, unit construction or wave timer prior to manual start',()=>{
+ const s=createGame(),c=createCombat(),initial=structuredClone(s.resources),f=firstFactory(s),store={...f.store};
+ for(let i=0;i<1200;i++)tickGame(s,c,.1); // two minutes waiting for human
+ assert.equal(c.phase,'ready');assert.equal(c.wave,0);assert.equal(c.countdown,0);
+ assert.deepEqual(s.resources,initial);assert.deepEqual(f.store,store);
+ assert.equal(c.enemies.length,0);assert.equal(c.units.length,0);
+ assert.equal(orderUnit(s,c,'factory-1'),false);assert.equal(c.orders.length,0);
+});
+test('first click starts wave and production, reset creates fresh ready state',()=>{
+ const s=createGame(),c=createCombat();const before={...s.resources};
+ assert.equal(startWave(c),true);assert.equal(c.wave,1);assert.equal(c.phase,'fight');
+ tickGame(s,c,.5);assert.ok(s.resources.ore>before.ore);assert.ok(s.resources.ammo>before.ammo);
+ assert.ok(s.resources.material>before.material);
+ const restarted=createCombat();const newGame=createGame();tickGame(newGame,restarted,100);
+ assert.equal(restarted.phase,'ready');assert.equal(newGame.resources.ammo,0);
+});
+test('building and undo remain available while waiting without generating materials',()=>{
+ const s=createGame(),c=createCombat(),before=s.resources.material;
+ assert.equal(c.phase,'ready');assert.equal(applyAction(s,'turret',3,5),true);
+ assert.ok(s.resources.material<before);tickGame(s,c,25);
+ assert.equal(s.resources.material,before-COSTS.turret);
+});
