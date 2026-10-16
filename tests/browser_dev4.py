@@ -12,7 +12,11 @@ with sync_playwright() as p:
   assert not errors,errors
   assert page.locator('#factories').inner_text()=='1'
   assert '0 / 0' in page.locator('#turrets').inner_text()
-  assert page.locator('#ore').inner_text().split('/')[0].strip()!='0.0'
+  assert page.locator('#ore').inner_text().split('/')[0].strip()=='0.0'
+  assert page.locator('#ammo').inner_text().split('/')[0].strip()=='0.0'
+  assert 'Produktion pausiert' in page.locator('#wave-status').inner_text()
+  assert page.locator('#order-unit').is_disabled()
+  assert 'Welle 1 starten' in page.locator('#wave-button').inner_text()
   # First blue ammo belt already beside factory; MG cell 3,5 touches its end.
   page.locator('[data-mode="turret"]').click();page.locator('#board').scroll_into_view_if_needed()
   rect=page.locator('#board').bounding_box()
@@ -30,9 +34,14 @@ with sync_playwright() as p:
   page.wait_for_timeout(110)
   assert float(page.locator('#material').inner_text().split('/')[0])>=before-0.5
   # Order offense and verify queue; real unit spawn checked in model tests.
+  # Wait while player builds: economy remains stopped until first wave.
+  page.wait_for_timeout(500)
+  assert page.locator('#ore').inner_text().split('/')[0].strip()=='0.0'
+  page.locator('#wave-button').click();page.wait_for_timeout(360)
+  assert float(page.locator('#ore').inner_text().split('/')[0])>0
   page.locator('#order-unit').click();page.wait_for_timeout(100)
   assert '1 im Bau' in page.locator('#unit-status').inner_text(),page.locator('#unit-status').inner_text()
-  page.locator('#wave-button').click();page.wait_for_timeout(240)
+
   assert 'Angriffswelle 1' in page.locator('#wave-status').inner_text(),page.locator('#wave-status').inner_text()
   assert page.locator('#undo').is_disabled()
   assert not errors,errors
