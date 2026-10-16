@@ -34,3 +34,8 @@ Alle DEV1/DEV2-Module und Funktionen erhalten. DEV3 ergänzt:
 
 ## NÄCHSTER SCHRITT
 Spielvorschau vom Nutzer testen lassen. Nach Feedback Anpassungen vornehmen und erst dann DEV4 freigeben. `main` und Forgefront nicht ändern.
+
+## NEUE BESCHLÜSSE nach DEV3 – noch NICHT implementiert
+Der Nutzer hat festgelegt: HQ vollständig entfernen; Produktionsfabriken übernehmen die Netzversorgung; Niederlage sobald **keine intakte Fabrik mehr vorhanden** ist. Die Soll-Kette ist Mine → Fabrik → MG über das vorhandene, verwundbare Wegenetz. **DEV3 enthält weiterhin HQ-basierte Logik** in `src/network.js`, `src/model.js`, `src/economy.js` und `src/combat.js`. Diese Funktionen gelten nur als IMPLEMENTIERT nach altem Stand und müssen in einem gesondert freigegebenen Änderungsbranch überarbeitet und mit neuen Regressionstests geprüft werden.
+
+**Critic-Risiko:** Bisherige zentrale Bestände dürfen bei mehreren getrennten Fabriknetzen keine magische netzübergreifende Versorgung erzeugen. Datenmodell und Benutzeranzeige entsprechend spezifizieren. Noch keine Codeänderung durch diesen Dokumentationscommit.
