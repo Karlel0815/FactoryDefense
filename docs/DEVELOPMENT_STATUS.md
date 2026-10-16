@@ -5,7 +5,7 @@
 **Entwicklungsbranch:** `feat/dev2-economy`  
 **DEV1-Referenz:** `cd67d3169a5ff3d0fa1631ce61fbedf0da944ec9`  
 **DEV1-Playtest:** Nutzer bestätigte „Jop geht“, dokumentiert im Folgecommit `6e88cf61f79a12da91b7863f2827293b6ca3bf73`.  
-**DEV2:** Aktueller Commit siehe Branch-HEAD; nicht auf `main` freigegeben.  
+**DEV2:** Implementierung im Entwicklungsbranch, Commit `e542575b1fadff602c403e3d2101ce5f5d08f081`; Nutzer bestätigt Funktionsfähigkeit der bereitgestellten Vorschau am 16.10.2026. Nicht auf `main` freigegeben.  
 **Main:** Enthält weiterhin den alten Moon-Dome-Prototyp, zuletzt `a6649de5b3d7d7503ce4baf11a543218d39cf786`. Kein Merge.
 
 ## IMPLEMENTIERT
@@ -17,7 +17,8 @@ DEV2 ergänzt: `src/economy.js` mit dynamischen Ressourcenbeständen und Limits;
 - Desktop- und simulierte Touch-Interaktion der portablen HTML-Vorschau via Playwright/Chromium **jeweils bestanden**: Munitions-/Erzproduktion, dreifacher Wegschaden und Netztrennung, Weg-Neubau, Undo, zusätzliche Fabrik. Keine Script-Ausnahmen.
 - Chromium-Navigation auf `localhost` von Testumgebung mit `ERR_BLOCKED_BY_ADMINISTRATOR` unterbunden; deshalb regulärer Server-Aufruf im echten Browser hier **nicht bestätigt**.
 - GitHub Actions nach Push: **Status noch prüfen**, nicht automatisch grün behaupten.
-- Reale Smartphone-Hardware: **OFFEN**.
+- Nutzerfeedback zur DEV2-Vorschau vom 16.10.2026: **„Geht“**. Positiver manueller Funktionseindruck, aber kein spezifizierter vollständiger Prüfablauf; verwendetes Gerät/Browser wurde nicht protokolliert.
+- Reale Smartphone-Hardware und vollständige plattformübergreifende Prüfung: **OFFEN**, solange Gerät und Testumfang nicht bestätigt sind.
 
 ## OFFEN / TECHNISCHE RISIKEN
 - 20-Spalten-Raster auf kleinen Smartphones teilweise winzige Tap-Ziele; realer Gerätetest erforderlich.
@@ -27,4 +28,4 @@ DEV2 ergänzt: `src/economy.js` mit dynamischen Ressourcenbeständen und Limits;
 - Keine Wellen, Angriffe, Verluste, Kampfeinheiten oder Kampagne.
 
 ## NÄCHSTER SCHRITT
-Nutzer prüft DEV2-Vorschau. Erst danach DEV3 (Verteidigung) spezifizieren/freigeben. Änderungen weiterhin nur über Entwicklungsbranch und geprüfte Commits. Forgefront unverändert.
+DEV2-Vorschau vom Nutzer grundsätzlich bestätigt. Als Nächstes DEV3 (Verteidigung) konkretisieren und nach separater Freigabe entwickeln. Änderungen weiterhin nur über Entwicklungsbranch und geprüfte Commits. Forgefront unverändert.
