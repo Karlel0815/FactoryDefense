@@ -1,5 +1,5 @@
 import { analyzeNetwork } from './network.js';
-import { consumeAmmo, syncTotals, takeMaterial } from './economy.js';
+import { consumeAmmo, syncTotals, takeMaterial, tickEconomy } from './economy.js';
 
 // All numbers are DEV4 balancing assumptions, not final design decisions.
 export const COMBAT=Object.freeze({
@@ -12,14 +12,14 @@ export const COMBAT=Object.freeze({
 const eps=1e-7;
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 export function createCombat(){return{
- phase:'prep',wave:0,countdown:COMBAT.preparation,spawned:0,spawnWait:0,
- enemies:[],shots:[],kills:0,nextEnemyId:1,message:'Baue Munitionsbänder zu den MGs.',
+ phase:'ready',wave:0,countdown:0,spawned:0,spawnWait:0,
+ enemies:[],shots:[],kills:0,nextEnemyId:1,message:'Bauphase: Die Produktion beginnt erst mit „Welle 1 starten“.',
  bunker:{x:18.5,y:6.5,hp:COMBAT.bunkerHp,maxHp:COMBAT.bunkerHp,cooldown:0},
  orders:[],units:[],nextUnitId:1
 };}
-export function startWave(c){if(c.phase!=='prep'||c.wave>=COMBAT.maxWaves)return false;c.phase='fight';c.wave++;c.spawned=0;c.spawnWait=0;c.countdown=0;c.message=`Welle ${c.wave} läuft`;return true;}
+export function startWave(c){if(!['ready','prep'].includes(c.phase)||c.wave>=COMBAT.maxWaves)return false;c.phase='fight';c.wave++;c.spawned=0;c.spawnWait=0;c.countdown=0;c.message=`Welle ${c.wave} läuft`;return true;}
 export function orderUnit(state,combat,factoryId){
- if(['victory','defeat'].includes(combat.phase)||combat.orders.length>=3)return false;
+ if(['ready','victory','defeat'].includes(combat.phase)||combat.orders.length>=3)return false;
  const factory=state.buildings.find(b=>b.type==='factory'&&b.hp>0&&b.id===factoryId);
  if(!factory||!takeMaterial(state,'unit'))return false;
  combat.orders.push({factoryId,time:COMBAT.unitBuild});
@@ -101,6 +101,7 @@ export function tickCombat(s,c,seconds){
  if(!Number.isFinite(seconds)||seconds<=0||['victory','defeat'].includes(c.phase))return;
  const dt=Math.min(seconds,.25);
  if(!s.buildings.some(b=>b.type==='factory'&&b.hp>eps)){c.phase='defeat';c.message='Letzte Fabrik zerstört – Mission verloren';return;}
+ if(c.phase==='ready')return; // First wave and ALL production require an explicit button press.
  for(const shot of c.shots)shot.ttl-=dt;c.shots=c.shots.filter(shot=>shot.ttl>0);
  stepOrders(s,c,dt);stepUnits(c,dt);
  if(c.bunker.hp<=eps){c.phase='victory';c.message='Gegnerischen Bunker zerstört – Mission gewonnen!';return;}
@@ -115,4 +116,11 @@ export function tickCombat(s,c,seconds){
    else {c.phase='prep';c.countdown=COMBAT.betweenWaves;c.message=`Welle ${c.wave} abgewehrt – baue für die nächste`;}
   }
  }
+}
+
+// Single simulation entry point; no ore, ammo, building materials or units before wave 1.
+export function tickGame(state,combat,seconds){
+ if(!Number.isFinite(seconds)||seconds<=0)return;
+ if(combat.phase!=='ready'&&!['victory','defeat'].includes(combat.phase))tickEconomy(state,seconds);
+ tickCombat(state,combat,seconds);
 }
