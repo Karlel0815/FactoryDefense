@@ -4,7 +4,7 @@
 **Repository:** `Karlel0815/FactoryDefense`  
 **Entwicklungsbranch:** `feat/dev4-factory-conveyors-offense`  
 **Referenz DEV3-Dokumentationsstand:** `60fc8298d6e6370a9a8c028bc157f416878cc6e8`  
-**DEV4-Commit:** siehe den aktuellen Commit des Entwicklungsbranches  
+**DEV4-Implementierungscommit:** `70a4afb56c97eaafea264feb71ac875da59652b5` (Code und Tests); zugehörige Dokumentationscommits in der Branch-Historie.  
 **main:** alter Moon-Dome-Stand; absichtlich nicht überschrieben. Forgefront unverändert.
 
 ## IMPLEMENTIERT
