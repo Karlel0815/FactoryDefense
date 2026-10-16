@@ -49,3 +49,11 @@ Die erste Wirtschaft ist programmiert und nutzt zunächst **Testwerte**, keine e
 
 ## DEV3 – Technischer Verteidigungsprototyp (vorläufig)
 Ein einfacher MG-Geschütztyp benötigt einen Anschluss an das Versorgungsnetz und echte Munition. Gegner greifen Minen, Transportwege und andere Infrastruktur gezielt an. Drei zeitlich gesteuerte Angriffswellen mit optionalem Frühstart, Reparaturen auch im Kampf sowie Sieg/Niederlage sind umgesetzt. Waffen-/Gegnerwerte und die direkten Bewegungswege sind weiterhin **Testannahmen**, nicht verbindlich beschlossen.
+
+## Änderung nach DEV3 – HQ entfällt (BESCHLOSSEN, noch nicht implementiert)
+
+**Neue Produktions- und Versorgungskette:** Mine → selbst gezeichneter verbundener Weg → Fabrik → derselbe oder angeschlossener Weg → MG. Erz wird logisch übertragen, von der Fabrik automatisch in Munition und Baumaterial umgewandelt und die Munition fließt ohne einzelne Transportfahrzeuge zu angebundenen MGs. **Kein HQ und keine HQ-Verbindung mehr.** Jede Fabrik ist ein potenzieller Versorgungskern; die **letzte intakte Fabrik zu verlieren beendet sofort das Spiel**.
+
+Dies ersetzt die Passagen im früheren MVP-Vorschlag („Hauptfabrik/HQ“ bzw. Niederlage durch HQ-Verlust). Der ältere Prototyp (DEV3) verwendet technisch noch HQ und zentrale Bestände; dies ist **nicht** der beschlossene Zielzustand.
+
+Bei mehreren voneinander getrennten Fabriknetzen dürfen Erz und Munition nicht ohne Netzanschluss zwischen den Inseln übertragen werden. Wie wir diese Ressourcen intern je Netz bilanzieren und die gemeinsame HUD-Anzeige erhalten, ist noch OFFEN und vor dem Code-Umbau zu spezifizieren.
