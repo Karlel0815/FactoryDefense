@@ -7,23 +7,26 @@ import { COMBAT, createCombat, startWave, orderUnit, tickGame } from './combat.j
 const board=document.querySelector('#board'),ctx=board.getContext('2d');
 const modeButtons=[...document.querySelectorAll('[data-mode]')],hint=document.querySelector('#hint');
 const undoButton=document.querySelector('#undo');
-let state=createGame(),combat=createCombat(),mode='ore',pointerId=null,previousCell=null,gesture=null;
+let state=createGame(),combat=createCombat(),mode='ore',pointerId=null,previousCell=null,gesture=null,inspectedId=null;
 const history=[],MAX_HISTORY=60;
 const help={
- ore:'🟨 Erzband: Verbinde Erzminen mit Fabriken. Nur gelbe Segmente transportieren Erz.',
- ammo:'🟦 Munitionsband: Verbinde Fabriken mit MGs. Blaue Segmente dürfen sich nicht mit gelben verbinden.',
+ ore:'🟨 Erzband: Verbinde Minen mit Fabriken. Kreuzungen mit blauen Bändern erzeugen automatisch eine Brücke.',
+ ammo:'🟦 Munitionsband: Verbinde Fabriken mit MGs. An einer geraden gelben Strecke entsteht automatisch eine isolierte Brücke.',
  mine:'Mine (18 Baumaterial): Setze eine Mine auf einem sichtbaren Erzfeld; anschließen mit gelbem Band.',
  factory:'Fabrik (24 Baumaterial): Annahme von Erz über gelbes Band, Ausgabe von Munition über blaues Band.',
  turret:'MG (14 Baumaterial): Benötigt blaue Verbindung zur Fabrik und lokal erzeugte Munition.',
+ inspect:'🔍 Gebäude antippen: Förder- oder Produktionsleistung, Prozentwert und mögliche Engpässe ansehen.',
  erase:'Entfernen: Bänder oder Gebäude abreißen. Die letzte intakte Fabrik ist gegen versehentliches Entfernen gesperrt.',
  repair:'Reparatur (3 Baumaterial/HP): Funktioniert auch während einer Welle. Vollständig zerstörte Teile neu bauen.',
- damage:'Testschaden: Einmal antippen beschädigt Gebäude oder Band. Nur im Prototyp.'
+ damage:'Testschaden: Einmal antippen beschädigt Gebäude oder Band. Auf Brücken trifft es zuerst das obere Band.'
 };
 function selectMode(next){mode=next;modeButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));hint.textContent=help[mode];draw();}
 modeButtons.forEach(b=>b.addEventListener('click',()=>selectMode(b.dataset.mode)));
 function markHistory(){if(!gesture?.changed||!['ready','prep'].includes(combat.phase)){gesture=null;return;}if(history.length===MAX_HISTORY)history.shift();history.push(gesture);gesture=null;undoButton.disabled=false;}
 function perform(cell){
  if(!cell||['victory','defeat'].includes(combat.phase))return;
+ const existing=state.buildings.find(b=>b.x===cell.x&&b.y===cell.y);
+ if(mode==='inspect'||(existing&&!['erase','repair','damage'].includes(mode))){inspectedId=existing?.id??null;draw();return;}
  if(!gesture)gesture={before:copyGame(state),materialDelta:0,changed:false};
  const before=state.resources.material;
  if(applyAction(state,mode,cell.x,cell.y)){
@@ -48,6 +51,7 @@ undoButton.addEventListener('click',()=>{
  if(!history.length||!['ready','prep'].includes(combat.phase))return;
  const action=history.pop(),current=state;
  state.belts={ore:new Map(action.before.belts.ore),ammo:new Map(action.before.belts.ammo)};
+ state.crossings=new Map([...action.before.crossings].map(([tile,c])=>[tile,{...c}]));
  state.buildings=action.before.buildings.map(b=>{
   const live=current.buildings.find(x=>x.id===b.id);
   return {...b,store:b.type==='factory'?(live?.store?{...live.store}:{...b.store}):undefined};
@@ -57,7 +61,7 @@ undoButton.addEventListener('click',()=>{
  syncTotals(state);undoButton.disabled=history.length===0;draw();
 });
 document.querySelector('#reset').addEventListener('click',()=>{
- state=createGame();combat=createCombat();history.length=0;gesture=null;undoButton.disabled=true;draw();
+ state=createGame();combat=createCombat();history.length=0;gesture=null;inspectedId=null;undoButton.disabled=true;draw();
 });
 document.querySelector('#wave-button').addEventListener('click',()=>{if(startWave(combat)){history.length=0;undoButton.disabled=true;gesture=null;draw();}});
 document.querySelector('#order-unit').addEventListener('click',()=>{
@@ -75,19 +79,47 @@ function draw(){
  for(let y=0;y<=state.height;y++){ctx.beginPath();ctx.moveTo(0,y*th+.5);ctx.lineTo(board.width,y*th+.5);ctx.stroke();}
  for(const tile of state.ores){const [x,y]=tile.split(',').map(Number);const cx=(x+.5)*tw,cy=(y+.5)*th;
   ctx.fillStyle='#3e3a37';ctx.fillRect(x*tw+3,y*th+3,tw-6,th-6);ctx.fillStyle='#e0b66a';ctx.beginPath();ctx.moveTo(cx,cy-th*.3);ctx.lineTo(cx+tw*.28,cy);ctx.lineTo(cx,cy+th*.3);ctx.lineTo(cx-tw*.28,cy);ctx.closePath();ctx.fill();}
+ const beltColor=(type,hp,online)=>hp<=0?'#753b46':hp<MAX_HP?'#9e6c51':type==='ore'?(online?'#c99b42':'#675b43'):(online?'#3d90ba':'#39596c');
+ // Draw ordinary belts. Crossing cells are rendered separately as a visually
+ // elevated orthogonal bridge, but still occupy one map tile.
  for(const type of ['ore','ammo'])for(const [tile,hp] of state.belts[type]){
+  if(state.crossings.has(tile))continue;
   const [x,y]=tile.split(',').map(Number),online=net.connected[type].has(tile);
-  ctx.fillStyle=hp<=0?'#753b46':hp<MAX_HP?'#9e6c51':type==='ore'?(online?'#c99b42':'#675b43'):(online?'#3d90ba':'#39596c');
-  ctx.fillRect(x*tw+5,y*th+5,tw-10,th-10);
+  ctx.fillStyle=beltColor(type,hp,online);ctx.fillRect(x*tw+5,y*th+5,tw-10,th-10);
   if(hp<=0){ctx.strokeStyle='#ffb2b2';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x*tw+13,y*th+12);ctx.lineTo((x+1)*tw-13,(y+1)*th-12);ctx.moveTo((x+1)*tw-13,y*th+12);ctx.lineTo(x*tw+13,(y+1)*th-12);ctx.stroke();}
   else{ctx.fillStyle=type==='ore'?'#fff0be':'#d3f3ff';ctx.font='bold 15px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(type==='ore'?'◆':'➜',(x+.5)*tw,(y+.5)*th);}
+ }
+ for(const [tile,cross] of state.crossings){
+  const [x,y]=tile.split(',').map(Number),cx=(x+.5)*tw,cy=(y+.5)*th;
+  const under=cross.over==='ore'?'ammo':'ore',over=cross.over;
+  function segment(type,axis,raised){
+   const hp=state.belts[type].get(tile)??0;
+   const color=beltColor(type,hp,net.connected[type].has(tile));
+   const span=raised?tw*.42:tw*.49;
+   const dx=axis==='h'?span:0,dy=axis==='v'?span:0;
+   ctx.lineCap='round';
+   if(raised){ctx.strokeStyle='#061b28';ctx.lineWidth=17;ctx.beginPath();ctx.moveTo(cx-dx,cy-dy);ctx.lineTo(cx+dx,cy+dy);ctx.stroke();}
+   ctx.strokeStyle=color;ctx.lineWidth=raised?12:10;ctx.beginPath();ctx.moveTo(cx-dx,cy-dy);ctx.lineTo(cx+dx,cy+dy);ctx.stroke();
+   if(hp<=0){ctx.strokeStyle='#ffa7aa';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx-7,cy-7);ctx.lineTo(cx+7,cy+7);ctx.stroke();}
+  }
+  segment(under,cross[under+'Axis'],false);
+  segment(over,cross[over+'Axis'],true);
+  ctx.fillStyle='#f6fafb';ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('⌒',cx,cy-1);
  }
  for(const b of state.buildings){const cx=(b.x+.5)*tw,cy=(b.y+.5)*th;
   const connected=b.type==='factory'?true:b.type==='mine'?net.mineOwner.has(b.id):(net.turretProviders.has(b.id));
   ctx.fillStyle=b.hp<=0?'#753b46':b.hp<MAX_HP?'#a07349':!connected?'#526574':b.type==='factory'?'#327c73':b.type==='turret'?'#3a7599':'#376f56';
   ctx.beginPath();ctx.roundRect(b.x*tw+3,b.y*th+3,tw-6,th-6,7);ctx.fill();
-  ctx.fillStyle='#ffffff';ctx.font='bold 24px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(b.type==='mine'?'⛏':b.type==='turret'?'✹':'⚙',cx,cy-4);
-  ctx.font='bold 10px system-ui';ctx.fillText(b.type==='mine'?'MINE':b.type==='turret'?'MG':'FAB',cx,cy+16);
+  ctx.fillStyle='#ffffff';ctx.font='bold 22px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(b.type==='mine'?'⛏':b.type==='turret'?'✹':'⚙',cx,cy-10);
+  if(b.type==='mine'||b.type==='factory'){
+   const paused=combat.phase==='ready',percent=Math.round(Math.max(0,Math.min(100,(b.outputRate||0)/(b.type==='mine'?RATE.mine:RATE.factory)*100)));
+   const value=b.hp<=0?'AUS':paused?'PAUSE':`${percent}%`;
+   ctx.fillStyle='#0d2630';ctx.fillRect(b.x*tw+4,cy+6,tw-8,19);
+   ctx.fillStyle=b.hp<=0?'#ef9b9b':paused?'#ccdee5':percent>=90?'#9af2ac':percent===0?'#f3a4a4':'#ffde94';
+   ctx.font=`bold ${paused?9:14}px system-ui`;ctx.fillText(value,cx,cy+16);
+  }else{ctx.font='bold 10px system-ui';ctx.fillText('MG',cx,cy+16);}
+  if(inspectedId===b.id){ctx.strokeStyle='#ffe3a0';ctx.lineWidth=2;ctx.strokeRect(b.x*tw+2,b.y*th+2,tw-4,th-4);}
+
   if(b.hp<MAX_HP){ctx.fillStyle='#ffb265';ctx.fillRect(b.x*tw+6,(b.y+1)*th-7,(tw-12)*(b.hp/MAX_HP),3);}
  }
  const bunker=combat.bunker,bx=bunker.x*tw,by=bunker.y*th;
@@ -98,6 +130,25 @@ function draw(){
  for(const u of combat.units){const x=u.x*tw,y=u.y*th;ctx.fillStyle='#6cdab9';ctx.beginPath();ctx.arc(x,y,11,0,Math.PI*2);ctx.fill();ctx.fillStyle='#14363b';ctx.font='bold 13px system-ui';ctx.fillText('➤',x,y);}
  for(const shot of combat.shots){ctx.strokeStyle=shot.team==='enemy'?'#ff7b75':shot.team==='unit'?'#96ffd1':'#ffe0a2';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(shot.x1*tw,shot.y1*th);ctx.lineTo(shot.x2*tw,shot.y2*th);ctx.stroke();}
  updateHUD(net);
+ updateInspection(net);
+}
+function updateInspection(net){
+ const panel=document.querySelector('#inspection');
+ if(!panel)return;
+ const b=state.buildings.find(b=>b.id===inspectedId);
+ if(!b){panel.hidden=true;return;}
+ panel.hidden=false;
+ if(b.type==='turret'){
+  const providers=net.turretProviders.get(b.id)||[];
+  panel.textContent=`MG: ${b.hp<=0?'zerstört':providers.length?'Munitionsnetz angeschlossen':'kein Munitionsband zur Fabrik'} · Versorgung durch ${providers.length} Fabrik(en)`;
+  return;
+ }
+ const rate=b.type==='mine'?RATE.mine:RATE.factory;
+ const actual=b.outputRate||0;
+ const pct=Math.round(Math.min(100,Math.max(0,100*actual/rate)));
+ const paused=combat.phase==='ready';
+ const reason=b.hp<=0?'Zerstört – neu bauen':paused?'Produktion bis Welle 1 angehalten':b.type==='mine'?(net.mineOwner.has(b.id)?actual<rate-.02?'Fabrik-Erzspeicher oder globaler Erzbestand voll':'Normaler Erzabbau':'Keine gelbe Erzverbindung zu einer Fabrik'):(actual<rate-.02?(b.store?.ore>0?'Munition/Baumaterial voll oder Fabrikkapazität blockiert':'Zu wenig Erz: gelbes Netz und Minen prüfen'):'Volle Produktion');
+ panel.textContent=`${b.type==='mine'?'Mine':'Fabrik'}: ${paused?'Pausiert':pct+' %'} · ${actual.toFixed(2)} / ${rate.toFixed(2)} Einh./s · ${reason}`;
 }
 function updateHUD(net){
  const mines=state.buildings.filter(b=>b.type==='mine'&&b.hp>0),turrets=state.buildings.filter(b=>b.type==='turret'&&b.hp>0);
