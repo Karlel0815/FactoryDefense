@@ -30,3 +30,8 @@
 
 ## Aktive Entscheidung
 Neuer Spielcode wird nur in Entwicklungsbranches geändert; Forgefront bleibt unangetastet. Code-Reuse dort nur nach Prüfung. Projektstatus und Entscheidungen werden getrennt geführt.
+
+## Nutzerfeedback / manuelle Funktionsprüfung (2026-10-16)
+- Nutzer meldet zur DEV1-Vorschau: „Jop geht“ – grundlegender manueller Funktionstest positiv.
+- Testumfang, Browsermodell und verwendetes Gerät wurden nicht einzeln protokolliert; daher **keine** vollständige Smartphone-, Browserkompatibilitäts- oder Regressionsfreigabe behaupten.
+- DEV1 kann als nutzbarer technischer Prototyp betrachtet werden; DEV2 bleibt **OFFEN** und erfordert gesonderte Umsetzungsfreigabe. `main` bleibt unverändert.
