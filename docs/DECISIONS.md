@@ -42,3 +42,18 @@
 
 ## DEV3 – implementierte Testannahmen, nicht endgültig beschlossen
 MG-Kosten 14 Baumaterial, 1 Munition pro Schuss und vorläufige Reichweite 4,8 Rasterzellen. Wellen mit 3/6/9 Feinden und zunehmender Trefferfestigkeit sind Testwerte, keine abschließenden Balancingbeschlüsse. Gegenüber bereits BESCHLOSSENEN Regeln keine Änderung: Reparaturen jederzeit; keine Lagerhäuser; 50:50-Produktion; selbst gezeichnete angreifbare Versorgungswege; gezielte Gegnerangriffe.
+
+## Richtungsänderung nach DEV3-Playtest – 2026-10-16
+
+| ID | Status | Entscheidung |
+|---|---|---|
+| FD-018 | BESCHLOSSEN | Das separate **HQ entfällt vollständig** als Gebäude, Verbindungspunkt und Verlustbedingung. |
+| FD-019 | BESCHLOSSEN | **Niederlage**, sobald keine intakte Fabrik mehr existiert (Lebenspunkte > 0). Mehrere Fabriken können den Fortbestand sichern. |
+| FD-020 | BESCHLOSSEN | **Fabriken** sind statt des HQ die Versorgungszentren. Erz gelangt über verbundene Wege von Minen zur Fabrik; die Fabrik erzeugt Munition/Baumaterial; verbundene MGs erhalten Munition über das Fabriknetz. Eine zusätzliche HQ-Verbindung ist nicht erforderlich. |
+
+Diese Entscheidungen **ersetzen** bisherige Aussagen, dass ein HQ als Netzquelle oder Sieg-/Niederlagegebäude benötigt wird. Vorherige DEV1–DEV3-Implementierungen bleiben als **historischer Codezustand** gekennzeichnet, bis der Umbau getestet ist.
+
+### Für Implementierung noch OFFEN
+- Getrennte Fabriknetze: korrekte Ressourcen- und Munitionszuordnung, ohne Material zwischen physisch getrennten Netzen zu teleportieren; zentrale HUD-Übersicht darf bleiben.
+- Verhindern versehentlichen Abrisses der allerletzten Fabrik oder explizite Niederlage durch Eigenabriss (Usability).
+- Anfangslayout/Startressourcen für eine erste Fabrik und Mine, sodass kein wirtschaftlicher Softlock entsteht.
