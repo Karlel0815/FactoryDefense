@@ -14,7 +14,7 @@
 | FD-008 | BESCHLOSSEN | Mine, Fabrik, Wege und Verteidigungsanlagen können angegriffen und zerstört werden. Gegner greifen Infrastruktur gezielt an. |
 | FD-009 | BESCHLOSSEN | Geschütze verbrauchen tatsächlich produzierte Munition. |
 | FD-010 | BESCHLOSSEN | Reparieren mit Baumaterial jederzeit, auch während einer Welle. Zerstörtes muss neu gebaut werden. |
-| FD-011 | BESCHLOSSEN | Wellen starten nach Vorbereitungszeit automatisch oder früher auf Spielereingabe. |
+| FD-011 | BESCHLOSSEN | **Nur Welle 1 startet durch ausdrücklichen Klick auf „Welle 1 starten“; davor keine Erzförderung, Munitions-, Baumaterial- oder Einheitenproduktion.** Ab Welle 2 automatischer Vorbereitungs-Countdown mit optionalem Frühstart. |
 | FD-012 | BESCHLOSSEN | Meilenstein-basierte Freischaltungen statt eigener Forschungswährung. |
 | FD-013 | BESCHLOSSEN | Mehrere Missionen mit übergreifender Kampagne und aktiven Zielen, beispielsweise feindlichen Bunker zerstören. |
 | FD-014 | BESCHLOSSEN | Einfache Kampf-Einheiten werden auf Bestellung mit Baumaterial/Produktionszeit hergestellt und zum Ziel losgeschickt, ohne direkte Echtzeitsteuerung. |
@@ -69,3 +69,6 @@ Diese Entscheidungen **ersetzen** bisherige Aussagen, dass ein HQ als Netzquelle
 **Ersetzt:** Ein einziges, neutrales Wegenetz aus DEV1–DEV3. Die ab DEV4 erprobten gelben und blauen Bänder sind nun getrennte Systeme. Das HQ entfällt entsprechend FD-018, letzte Fabrik verloren entsprechend FD-019. 
 
 **Implementierte DEV4-Testannahmen, nicht endgültig beschlossen:** Kein Überlappen beider Bandtypen auf einem Feld; Erz/Munition bleiben je Fabrik bevorratet, Baumaterial ist global; eine Mine wird genau einer versorgenden Fabrik zugeordnet; jede versorgte MG-Einheit darf Munition aus einer erreichbaren Fabrik entnehmen; Angriffseinheiten zielen vorerst nur auf den einzelnen Bunker. Produktions-/Kampfzahlen weiterhin offen für Balancing. 
+
+## DEV4.1 – verbindlicher Spielstart (BESCHLOSSEN)
+Der Spieler kann vor Welle 1 **unbegrenzt bauen**, finanziert aus dem vorhandenen Startbaumaterial. Die Zeit läuft nicht herunter. **Alle Produktion und Erzförderung stehen still, bis die erste Welle manuell gestartet wurde.** Auch Angriffseinheiten können davor nicht produziert/bestellt werden. Die automatische Vorbereitungszeit gilt erst ab der **zweiten** Welle. Diese neue Regel ersetzt den alten automatischen Start der ersten Welle.
