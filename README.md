@@ -36,3 +36,8 @@ Die früheren DEV1-3-Testdateien bleiben als **historische Prüfszenarien** erha
 Zahlenwerte, Wellen, Baukosten, Bewegung und Kampf sind **Testannahmen**. Kampfeinheiten steuern in DEV4 ausschließlich den einzigen Bunker als automatisch vorgegebenes Ziel an. Mehrere Missionen, freie Angriffszielwahl, Forschung und echte Kampagnenprogression sind noch **nicht implementiert**. Keine echte Smartphone-Hardwareprüfung. Keine Merge-/Release-Freigabe auf `main`.
 
 Dokumentation: [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md), [`docs/DECISIONS.md`](docs/DECISIONS.md), [`docs/DEVELOPMENT_STATUS.md`](docs/DEVELOPMENT_STATUS.md), [`docs/TASKS.md`](docs/TASKS.md).
+
+## DEV4.1 – manuelle erste Welle
+Die Startphase ist unbegrenzt: Baue zunächst mit dem verfügbaren Startbaumaterial. **Erst der Button „Welle 1 starten“ startet Förderung, Munition-/Baumaterialproduktion, Einheitenfertigung und den ersten Angriff.** Vorher läuft kein Countdown und es werden keine Ressourcen erzeugt. Welle 2 und 3 starten nach ihren Vorbereitungs-Countdowns automatisch, können aber früher gestartet werden.
+
+Stand: `feat/dev4-1-manual-wave-start`, lokale Regression **44/44** und simulierte Desktop-/Touch-Interaktion erfolgreich. Echter Smartphone-Test und Merge nach `main` offen.
