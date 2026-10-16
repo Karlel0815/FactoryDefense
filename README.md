@@ -1,28 +1,19 @@
-# Moon Dome – Production Survival (DEV V0.1)
+# FactoryDefense – eigenständiges Fabrik-Verteidigungsspiel
 
-Ein eigenständiger, experimenteller **Browser-Prototyp** von Moon Dome. Keine Verbindung zu Forgefront.
+**Status:** Konzept beschlossen, technische Vorbereitung; noch kein spielbarer Build des neuen Spiels.
 
-## Start
+Dieses Repository wurde am 16.10.2026 aus dem ehemaligen Moon-Dome-Repository für ein **neues eigenständiges Spiel** neu ausgerichtet. Die alte Moon-Dome-Version bleibt über die Git-Historie / den bisherigen `main`-Branch rückholbar, gehört jedoch **nicht** zu FactoryDefense.
 
-`index.html` im Browser öffnen. Funktioniert ohne Server und ohne externe Bibliotheken.
+## Spielidee
+Erz fördern, automatisch Munition und Baumaterial herstellen, Minen über selbst gezeichnete, verwundbare Versorgungswege verbinden, Verteidigung aufbauen und Angriffswellen überstehen. Mit auf Bestellung produzierten Kampfeinheiten lassen sich aktive Missionsziele wie ein gegnerischer Bunker angreifen. Mehrere Missionen führen zu einem erreichbaren Kampagnenabschluss.
 
-## Bedienung
+## Technologie
+JavaScript, HTML, CSS, 2D-Canvas; möglichst wenige Abhängigkeiten. Browser auf Desktop und Smartphone.
 
-- Zu Beginn eine Fabrik und ein MG auf den markierten Plätzen bauen (Metallkosten sichtbar).
-- **Welle 1 starten**: Produktion beginnt erst mit der ersten Welle (kein Vorfarmen).
-- Weitere Minen, Fabriken und MGs über feste Plätze kaufen.
-- Drei **globale Forschungen** mit jeweils drei Stufen verbessern Förderung, Verarbeitung und MG-Schaden.
-- Alle MGs beziehen ihre Munition aus einem gemeinsamen Vorrat. Bei Mangel wird die Schussrate fair gedrosselt.
-- Genau ein festgelegter Gegnerweg, ein Gegnertyp, fünf MG-Plätze, begrenzte Reichweite.
-- Nächste Welle nach fünf Sekunden; die optionale Pause zwischen Wellen friert die gesamte Wirtschaft ein.
-- Kuppelschaden bleibt bestehen. Bei Zerstörung endet der Run; der höchste abgeschlossene Wellenrekord wird lokal gespeichert.
+## Projektinformationen
+- [Spieldesign](docs/GAME_DESIGN.md)
+- [Verbindliche Entscheidungen](docs/DECISIONS.md)
+- [Entwicklungsstand](docs/DEVELOPMENT_STATUS.md)
+- [Aufgaben und Testplan](docs/TASKS.md)
 
-## Konzeptstatus
-
-Die Zahlen zu Startmetall, Kosten, Produktionsraten, HP, Weggeometrie, Reichweiten und Gegnern sind **Testannahmen**, keine festgelegten finalen Balancingwerte. Die fünf Sekunden zwischen den Wellen laufen in diesem Prototyp in Echtzeit. Kein Gold, keine weiteren Waffen oder Wege, keine Leitungen. Kein echtes Savegame und keine Online-Bestenliste.
-
-## Entwicklungsstatus
-
-DEV V0.1 (dev2) befindet sich auf Branch `feat/production-survival-v01` und ist **nicht** auf `main` bzw. GitHub Pages veröffentlicht. Die aktuellen Zahlen sind nur Testwerte. Vor einer Veröffentlichung stehen Smartphone-Tests und Balancingprüfung aus.
-
-Konzept: https://docs.google.com/document/d/1lUb6J9ZJk_QFUXJjMPBIE6NUVYtceo__PW76sJog9mo/edit
+**Achtung:** Noch kein Game-Code für FactoryDefense implementiert oder getestet. Die Aufnahme neuer Features benötigt separate Freigabe. Forgefront ist ein anderes Repository und bleibt unangetastet.
