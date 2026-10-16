@@ -1,36 +1,31 @@
-# FactoryDefense – DEV-Plan und offener Testumfang
+# FactoryDefense – Entwicklungsaufgaben
 
-## DEV1 – Raster & Versorgung (abgeschlossen als Prototyp)
-- [x] Raster, Wegzeichnen, Minen, Unterbrechung, Schaden/Reparatur, Undo, 8 Logiktests
-- [x] Einfacher Nutzer-Funktionstest positiv
-- [ ] Reale Smartphone-Abnahme mit überprüfter Touch-Bedienung
+## DEV1 (IMPLEMENTIERT / Nutzer-Funktionsprüfung positiv)
+- [x] Raster, Mine, Wege, Schaden, Reparaturen, Undo, Netzberechnung.
 
-## DEV2 – Ressourcen und Wirtschaft (Code und lokale QA abgeschlossen)
-- [x] Erzförderung nur angeschlossener Minen
-- [x] Zentrale Bestände mit Lagerlimits und HUD
-- [x] 50:50-Produktion und automatische Umleitung bei vollem Bestand
-- [x] Zusätzliche Fabrik bauen, nur verbunden aktiv
-- [x] Materialkosten für Minen, Wege, Fabriken, Reparaturen
-- [x] Testschaden, Abkopplung, Verlust der HQ-Produktion
-- [x] Abriss-Rückgewinnung als vorläufige Testregel
-- [x] 13 neue Node-Tests + 8 Regressionstests, lokal bestanden
-- [x] Simulierter Touch- und Desktop-Interaktionstest der portablen Vorschau bestanden
-- [ ] Realer Smartphone-Test der regulären Version
-- [ ] GitHub-CI-Status kontrollieren und dokumentieren
-- [x] DEV2-Vorschau vom Nutzer grundsätzlich als funktionierend bestätigt („Geht“, 16.10.2026)
-- [ ] DEV2-Spielgefühl und Wirtschaftsbalance vertieft bewerten (positive Funktionsmeldung ersetzt keinen Balancingtest)
+## DEV2 (IMPLEMENTIERT / Nutzer-Funktionsprüfung positiv)
+- [x] Lagerlimits, Förderung und 50:50-Produktion, Zusatzfabrik, Bau-/Reparaturkosten.
 
-## DEV3 – Verteidigung (NICHT implementiert)
-- [ ] Geschütze, tatsächlicher Munitionsverbrauch, Reichweite, Schüsse
-- [ ] Angriffswellen, Gegner-Zielpriorität, Gebäudeschäden
-- [ ] Reparaturen jederzeit, Unterbrechung im Kampf, Niederlage
-- [ ] End-to-End-Tests und unabhängige Critic-Prüfung
+## DEV3 (IMPLEMENTIERT / lokale QA durchgeführt)
+- [x] MG kaufen/platzieren, Netzprüfung, Reichweite, Munition und Gegner-Schaden.
+- [x] Drei Wellen, Timer und manueller Frühstart.
+- [x] Infrastruktur-Zielwahl, Gebäude- und Straßenschaden.
+- [x] Reparaturen jederzeit, Sieg/Niederlage, Restart.
+- [x] Undo gegen Kampfschaden-Exploit abgesichert.
+- [x] 35 automatisierte Logik-/Regressionstests.
+- [x] Desktop-/emulierte Touch-Browser-Smokes.
+- [x] Einfaches Balancing-A/B-Szenario (ein MG verliert, zwei gewinnen).
+- [ ] Reale Smartphone- und Spielerabnahme für DEV3.
+- [ ] GitHub CI nach Commit prüfen; noch kein positiver Nachweis.
 
-## DEV4 – Offensive / Kampagne (NICHT implementiert)
-- [ ] Einheiten auf Bestellung; automatische Zielbewegung
-- [ ] Bunkerzerstörung, Missionserfolg, Meilenstein-Freischaltungen
+## DEV4 (OFFEN / keine Freigabe)
+- [ ] Kampf-Einheiten auf Bestellung, automatische Zielbewegung.
+- [ ] Gegnerischer Bunker, Missionserfolg, Fortschritt über Missionen.
+- [ ] Aufs Neue Entscheidungen prüfen, Softlock-Schutz vor finalem Release.
 
-## Critic / Balance
-- [ ] Softlock-Schutz bei völligem Ressourcenmangel besprechen
-- [ ] Kosten und Produktionsraten testen (nur Annahmen in DEV2)
-- [ ] Energie-/Performanceprofil auf echtem Mobilgerät testen
+## Critic / Testergebnisse
+- [ ] Wirtschaftlicher Softlock nach Zerstörung kritischer Infrastruktur.
+- [ ] Balancing zwischen Aufbau, Munitionsproduktion und Verteidigung.
+- [ ] Gegnerwegfindung: derzeit direkte Zielbewegung ohne Hinderniskollision.
+- [ ] Smartphone-UI mit kleinen Rasterzellen und langer Spielsession.
+- [ ] Debug-Schadenswerkzeug vor Veröffentlichung entfernen.

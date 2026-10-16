@@ -1,31 +1,36 @@
 # FactoryDefense – Entwicklungsstand
 
-**Datum:** 16.10.2026 · **Projekt:** FactoryDefense (Arbeitstitel)  
-**Repository:** `Karlel0815/FactoryDefense` (aus Moon Dome umbenannt)  
-**Entwicklungsbranch:** `feat/dev2-economy`  
-**DEV1-Referenz:** `cd67d3169a5ff3d0fa1631ce61fbedf0da944ec9`  
-**DEV1-Playtest:** Nutzer bestätigte „Jop geht“, dokumentiert im Folgecommit `6e88cf61f79a12da91b7863f2827293b6ca3bf73`.  
-**DEV2:** Implementierung im Entwicklungsbranch, Commit `e542575b1fadff602c403e3d2101ce5f5d08f081`; Nutzer bestätigt Funktionsfähigkeit der bereitgestellten Vorschau am 16.10.2026. Nicht auf `main` freigegeben.  
-**Main:** Enthält weiterhin den alten Moon-Dome-Prototyp, zuletzt `a6649de5b3d7d7503ce4baf11a543218d39cf786`. Kein Merge.
+**Datum:** 2026-10-16  
+**Repository:** Karlel0815/FactoryDefense  
+**Referenz:** `feat/dev2-economy` / `3d79ced14d8753155468a660512606b9f8a1a621` (DEV2, dokumentiertes Spielerfeedback)  
+**Arbeitsbranch:** `feat/dev3-defense-waves`  
+**Commit DEV3:** Siehe GitHub Branch-HEAD (nach Push eintragen).  
+**main:** Weiterhin alter Moon-Dome-Prototyp `a6649de5b3d7d7503ce4baf11a543218d39cf786`, kein Merge.
 
 ## IMPLEMENTIERT
-DEV1 unverändert weiter nutzbar: Raster, HQ, Erzfelder, Minen, Transportnetz, Wegzeichnen, Schaden/Reparatur (Test), Rückgängig und Neubau.
-DEV2 ergänzt: `src/economy.js` mit dynamischen Ressourcenbeständen und Limits; verbundene Minen erzeugen Erz, HQ verarbeitet Erz als Anfangsfabrik; weitere Fabriken platzierbar; Output 50:50 Munition/Baumaterial, Übertrag bei vollem Bestand. Verbundene Förder- und Fabrikgebäude sind wirtschaftlich aktiv, getrennte nicht. Bauen/Reparieren kostet Baumaterial; intakte Bauten lassen sich gegen Teilrückerstattung abreißen. Undo nimmt nur strukturelle Eingriffe und deren Materialdifferenz zurück, nicht die zwischenzeitlich erzeugte Produktion. Offline-Fortschritt wird nicht aufsummiert.
+Alle DEV1/DEV2-Module und Funktionen erhalten. DEV3 ergänzt:
+- Einfache MG-Bauoption, Materialkosten, Netzwerkgebundenheit, Reichweite, echte Munition je Schuss, Projektilspur, Schaden an Gegnern.
+- Feindliche Angriffswellen mit festen Prototyp-Spawns und zunehmender Gegnerzahl/Zähigkeit. Gegner zielen autonom auf Fabriken, Minen, Türme, HQ und Transportwege (netzfokussierte Gegner).
+- Wellen 1–3; zunächst automatische Vorbereitung mit freiwilligem früherem Start, automatische Pausen zwischen Wellen.
+- Angriffe senken Gebäude-/Wege-Lebenspunkte; Wegzerstörung trennt das Versorgungsnetz; Reparatur gegen Baumaterial ist auch **während Angriffen** erlaubt.
+- Sieg nach drei tatsächlich abgewehrten Wellen; Niederlage nach Zerstörung des HQ; Neustart möglich.
+- Undo während Angriffsphasen gesperrt und Historie an Phasenübergängen geleert, um Rücknahme von Kampfschäden zu verhindern.
 
-## VERIFIZIERTE TESTS
-- 21 lokale `npm test` Node-Tests **21/21 bestanden** (8 DEV1 Regression + 13 DEV2).
-- Desktop- und simulierte Touch-Interaktion der portablen HTML-Vorschau via Playwright/Chromium **jeweils bestanden**: Munitions-/Erzproduktion, dreifacher Wegschaden und Netztrennung, Weg-Neubau, Undo, zusätzliche Fabrik. Keine Script-Ausnahmen.
-- Chromium-Navigation auf `localhost` von Testumgebung mit `ERR_BLOCKED_BY_ADMINISTRATOR` unterbunden; deshalb regulärer Server-Aufruf im echten Browser hier **nicht bestätigt**.
-- GitHub Actions nach Push: **Status noch prüfen**, nicht automatisch grün behaupten.
-- Nutzerfeedback zur DEV2-Vorschau vom 16.10.2026: **„Geht“**. Positiver manueller Funktionseindruck, aber kein spezifizierter vollständiger Prüfablauf; verwendetes Gerät/Browser wurde nicht protokolliert.
-- Reale Smartphone-Hardware und vollständige plattformübergreifende Prüfung: **OFFEN**, solange Gerät und Testumfang nicht bestätigt sind.
+## TESTERGEBNISSE
+- Node-Tests DEV1/DEV2/DEV3 lokal bestanden: **35/35** (21 Regression + 14 DEV3).
+- Automatisierter Browser-Smoke: Desktop + emuliertes Touch-Gerät mit Inline-Einzeldatei geprüft; Bau, Ressourcenänderung, Wellenstart, Gegner-Anzeige und Undo-Sperre. **Bestanden**.
+- Szenariosimulation: 0 oder 1 MG führt zum Verlust; 2 an das Netz angeschlossene MGs gewinnen gegen alle drei Wellen ohne Eingriffe. Ergebnis nur für das feste Testlayout, **nicht** allgemeines Balancing.
+- Lokaler Server-/`file://`-Aufruf der regulären App im automatisierten Browser wurde durch Sandbox-Navigationsregeln blockiert; Browser-Test erfolgte mit `set_content` aus der Einzeldatei. **Keine** allgemeine Browserkompatibilität daraus behaupten.
+- Reales Smartphone und benutzerseitiger vollständiger Spieltest: **OFFEN**.
+- GitHub CI-Status: nach Upload gesondert prüfen, nicht automatisch als bestanden ausgeben.
 
-## OFFEN / TECHNISCHE RISIKEN
-- 20-Spalten-Raster auf kleinen Smartphones teilweise winzige Tap-Ziele; realer Gerätetest erforderlich.
-- Reale Versorgung durch Geschütze und Munitionsverbrauch fehlen (DEV3).
-- Bei vollständigem Materialmangel und zerstörtem Versorgungsnetz kann ein Softlock auftreten; DEV2 bietet Neustart und Teilrückgewinnung durch Abriss, aber noch keine vollständige Schutzregel.
-- Die wirtschaftlichen Werte (Förderung, Umwandlung, Baukosten, Limits, Abriss-Rückgewinnung) sind **Testannahmen**.
-- Keine Wellen, Angriffe, Verluste, Kampfeinheiten oder Kampagne.
+## OFFEN / KRITISCH
+- Kein offensiver Missionsabschluss oder Meta-Progression – erst DEV4.
+- Turm-/Gegnerparameter und drei Wellen sind Testwerte und noch nicht vom Spieler gebalanced.
+- Gegner laufen derzeit direkt zum Zielpunkt; komplexe Hindernisnavigation wurde bewusst nicht implementiert.
+- Wirtschaftlicher Softlock nach vollständiger Zerstörung und Materialmangel bleibt möglich; Critic-Review vor DEV4 notwendig.
+- Für 20x12 Raster sind einzelne Touch-Zellen auf kleinen Smartphones weiterhin relativ klein.
+- Debug-Schadenswerkzeug bleibt im Testbuild verfügbar, nicht für Release vorgesehen.
 
 ## NÄCHSTER SCHRITT
-DEV2-Vorschau vom Nutzer grundsätzlich bestätigt. Als Nächstes DEV3 (Verteidigung) konkretisieren und nach separater Freigabe entwickeln. Änderungen weiterhin nur über Entwicklungsbranch und geprüfte Commits. Forgefront unverändert.
+Spielvorschau vom Nutzer testen lassen. Nach Feedback Anpassungen vornehmen und erst dann DEV4 freigeben. `main` und Forgefront nicht ändern.

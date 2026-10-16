@@ -2,7 +2,7 @@ import { inBounds, key } from './grid.js';
 import { CAPS, COSTS, START_RESOURCES, takeMaterial, salvageMaterial } from './economy.js';
 
 export const MAX_HP = 3;
-export const MODES = ['road', 'mine', 'factory', 'erase', 'repair', 'damage'];
+export const MODES = ['road', 'mine', 'factory', 'turret', 'erase', 'repair', 'damage'];
 
 export function createGame() {
   return {
@@ -33,10 +33,10 @@ export function applyAction(state, mode, x, y) {
   const roadHP = state.roads.get(tile);
   if (mode === 'road') {
     if (building || state.ores.has(tile) || roadHP > 0 || !takeMaterial(state, mode)) return false;
-    state.roads.set(tile, MAX_HP);
+    state.roads.set(tile, MAX_HP); // Rebuild completely destroyed roads.
     return true;
   }
-  if (mode === 'mine' || mode === 'factory') {
+  if (mode === 'mine' || mode === 'factory' || mode === 'turret') {
     if (building || roadHP !== undefined || (mode === 'mine') !== state.ores.has(tile) || !takeMaterial(state, mode)) return false;
     state.buildings.push({ id: `${mode}-${state.nextId++}`, type: mode, x, y, hp: MAX_HP });
     return true;
@@ -54,6 +54,7 @@ export function applyAction(state, mode, x, y) {
     }
     return false;
   }
+  // Only the test tool can damage things. DEV3 will use combat damage directly.
   if (mode === 'damage') {
     if (building && building.hp > 0) { building.hp--; return true; }
     if (roadHP > 0) { state.roads.set(tile, roadHP - 1); return true; }
@@ -62,11 +63,11 @@ export function applyAction(state, mode, x, y) {
   if (mode === 'repair') {
     if (building?.hp > 0 && building.hp < MAX_HP) {
       if (!takeMaterial(state, mode)) return false;
-      building.hp++; return true;
+      building.hp = Math.min(MAX_HP, building.hp + 1); return true;
     }
     if (roadHP > 0 && roadHP < MAX_HP) {
       if (!takeMaterial(state, mode)) return false;
-      state.roads.set(tile, roadHP + 1); return true;
+      state.roads.set(tile, Math.min(MAX_HP, roadHP + 1)); return true;
     }
     return false;
   }

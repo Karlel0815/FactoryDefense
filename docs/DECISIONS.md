@@ -39,3 +39,6 @@
 - Beispielkosten: Weg 2, Mine 18, Fabrik 24, Reparatur 3 je HP; Abriss intakter Anlagen erstattet testweise 50 %.
 - Keine baubaren Lager, keine Produktionsmodi. Der Munitionsbestand wird erst in DEV3 durch Geschütze verbraucht.
 - Alle genannten Zahlen und die Abriss-Rückgewinnung sind **OFFEN für Balancing**, nicht verbindlich.
+
+## DEV3 – implementierte Testannahmen, nicht endgültig beschlossen
+MG-Kosten 14 Baumaterial, 1 Munition pro Schuss und vorläufige Reichweite 4,8 Rasterzellen. Wellen mit 3/6/9 Feinden und zunehmender Trefferfestigkeit sind Testwerte, keine abschließenden Balancingbeschlüsse. Gegenüber bereits BESCHLOSSENEN Regeln keine Änderung: Reparaturen jederzeit; keine Lagerhäuser; 50:50-Produktion; selbst gezeichnete angreifbare Versorgungswege; gezielte Gegnerangriffe.

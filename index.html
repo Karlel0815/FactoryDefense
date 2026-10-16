@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b1723" />
-  <title>FactoryDefense – DEV2</title>
+  <title>FactoryDefense – DEV3</title>
   <link rel="stylesheet" href="src/style.css" />
   <script type="module" src="src/game.js"></script>
 </head>
 <body>
 <main class="app">
   <header>
-    <div><h1>FACTORY<span>DEFENSE</span></h1><p>DEV2 · PRODUKTION & VERSORGUNG</p></div>
+    <div><h1>FACTORY<span>DEFENSE</span></h1><p>DEV3 · VERTEIDIGUNG & WELLEN</p></div>
     <button id="reset" class="quiet" type="button">Neustart</button>
   </header>
   <section class="resources" aria-label="Ressourcenbestand">
@@ -25,21 +25,27 @@
     <div><small>Aktive Fabriken</small><strong id="factories">1</strong></div>
     <div><small>Status</small><strong id="status">Bereit</strong></div>
   </section>
+  <section class="battle-hud" aria-label="Angriffswellen">
+    <div><strong id="wave-status">Vorbereitung 1/3</strong><small id="wave-message">Bereite deine Verteidigung vor</small></div>
+    <div class="battle-stats">Gegner: <b id="enemy-count">0</b> · Besiegt: <b id="kills">0</b></div>
+    <button id="wave-button" class="launch" type="button">Welle 1 früher starten</button>
+  </section>
   <div class="board-wrap">
     <canvas id="board" width="1000" height="600" tabindex="0" aria-label="Baukarte, Raster mit Hauptfabrik, Erzen, Minen und Wegen"></canvas>
   </div>
-  <p class="hint" id="hint" role="status" aria-live="polite">Startmine fördert Erz; die Hauptfabrik produziert automatisch Munition und Baumaterial. Ziehe weitere Versorgungswege oder baue eine Fabrik.</p>
+  <p class="hint" id="hint" role="status" aria-live="polite">Baue ein MG an eine verbundene Versorgungsstraße! MGs schießen nur mit Munition. Angriffswelle startet automatisch oder früher per Knopfdruck.</p>
   <nav class="toolbar" aria-label="Bauwerkzeuge">
     <button type="button" data-mode="road" aria-pressed="true">🟩 Weg · 2</button>
     <button type="button" data-mode="mine" aria-pressed="false">⛏ Mine · 18</button>
     <button type="button" data-mode="factory" aria-pressed="false">⚙ Fabrik · 24</button>
+    <button type="button" data-mode="turret" aria-pressed="false">✹ MG · 14</button>
     <button type="button" data-mode="erase" aria-pressed="false">⌫ Entfernen</button>
     <button type="button" data-mode="repair" aria-pressed="false">🔧 Reparatur · 3</button>
-    <button type="button" data-mode="damage" aria-pressed="false">⚡ Testschaden</button>
+    <button type="button" data-mode="damage" aria-pressed="false">⚡ Debugschaden</button>
   </nav>
   <div class="footer-actions"><button id="undo" type="button" disabled>↶ Rückgängig</button><span id="build-cost">Kosten: 2 Material</span></div>
   <p class="rates" id="rates" aria-live="off">Förderung: 4 Erz/s · Fabrik: 2 Einh./s</p>
-  <p class="note">Automatische Produktion 50:50; volle Produktlager leiten Kapazität um. Grün = versorgt, Grau = getrennt. Erzeugnisse landen in gemeinsamen Beständen. Entfernen gibt 50 % der Materialkosten intakter Anlagen zurück. Testschaden simuliert Treffer. DEV3 bringt echte Kämpfe.</p>
+  <p class="note">Automatische Produktion 50:50; volle Produktlager leiten Kapazität um. Grün = versorgt, Grau = getrennt. Erzeugnisse landen in gemeinsamen Beständen. Entfernen gibt 50 % der Materialkosten intakter Anlagen zurück. Gegner greifen gezielt Minen, Straßen und Gebäude an. MGs brauchen Netzanschluss und echte Munition. Reparaturen funktionieren auch während des Angriffs. Drei Wellen überstehen = Sieg.</p>
 </main>
 </body>
 </html>

@@ -1,7 +1,7 @@
 import { key, neighbors } from './grid.js';
 
-// Only roads connected to the HQ distribute resources. Detached road islands
-// do not supply mines; throughput is deliberately unlimited in DEV1.
+// Only roads connected to the HQ distribute resources. Roads have unlimited
+// throughput in DEV1; detached islands intentionally remain disconnected.
 export function analyzeNetwork(state) {
   const hq = state.buildings.find(b => b.type === 'hq' && b.hp > 0);
   const suppliedRoads = new Set();
