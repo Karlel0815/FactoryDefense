@@ -1,9 +1,28 @@
 import { key, neighbors } from './grid.js';
 
-// Belts of different types cannot overlap or connect. Buildings act as
-// terminals, not as bridges between two belt networks.
+// Media remain isolated even at an orthogonal bridge crossing. Factories
+// convert ore into ammunition; crossings are never converters.
 export const BELTS = Object.freeze(['ore', 'ammo']);
-export const beltAt = (state, x, y) => state.belts.ore.has(key(x,y)) ? 'ore' : state.belts.ammo.has(key(x,y)) ? 'ammo' : null;
+export const beltAt = (state, x, y) => state.crossings?.get(key(x,y))?.over ?? (state.belts.ore.has(key(x,y)) ? 'ore' : state.belts.ammo.has(key(x,y)) ? 'ammo' : null);
+export const axisBetween=(x,y,ax,ay)=>x===ax?'v':y===ay?'h':null;
+export const crossingAxis=(state,x,y,type)=>{
+ const has=(a,b)=>(state.belts[type].get(key(a,b))??0)>0;
+ const h=has(x-1,y)&&has(x+1,y),v=has(x,y-1)&&has(x,y+1);
+ return h&&!v?'h':v&&!h?'v':null;
+};
+export const canBridge=(state,x,y,under)=>{
+ if(state.crossings.has(key(x,y)))return false;
+ if((state.belts[under].get(key(x,y))??0)<=0)return false;
+ return crossingAxis(state,x,y,under)!==null;
+};
+// A crossing tile connects ONLY in the axis of its own medium. Both
+// endpoints of an edge must admit that direction (no side-entry/turns).
+function connectionAllowed(state,type,x,y,ax,ay){
+ const axis=axisBetween(x,y,ax,ay);
+ const source=state.crossings.get(key(x,y)),dest=state.crossings.get(key(ax,ay));
+ return (!source||source[type+'Axis']===axis)&&(!dest||dest[type+'Axis']===axis);
+}
+
 const alive = b => b.hp > 0;
 const adjacent = (a, b) => Math.abs(a.x-b.x)+Math.abs(a.y-b.y) === 1;
 const cmp = (a, b) => String(a.id).localeCompare(String(b.id));
@@ -24,7 +43,7 @@ export function analyzeNetwork(state) {
         const [x,y]=loc.split(',').map(Number);
         for (const [ax,ay] of neighbors(x,y,state.width,state.height)) {
           const next=key(ax,ay);
-          if (!visited.has(next) && (state.belts[type].get(next)??0)>0) {
+          if (!visited.has(next) && (state.belts[type].get(next)??0)>0 && connectionAllowed(state,type,x,y,ax,ay)) {
             visited.add(next);component.tiles.add(next);todo.push(next);
           }
         }
