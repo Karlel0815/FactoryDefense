@@ -1,8 +1,8 @@
 import { applyAction, copyGame, createGame, MAX_HP } from './model.js';
 import { analyzeNetwork } from './network.js';
 import { key, lineCells, positionToCell } from './grid.js';
-import { CAPS, COSTS, RATE, syncTotals, tickEconomy } from './economy.js';
-import { COMBAT, createCombat, startWave, orderUnit, tickCombat } from './combat.js';
+import { CAPS, COSTS, RATE, syncTotals } from './economy.js';
+import { COMBAT, createCombat, startWave, orderUnit, tickGame } from './combat.js';
 
 const board=document.querySelector('#board'),ctx=board.getContext('2d');
 const modeButtons=[...document.querySelectorAll('[data-mode]')],hint=document.querySelector('#hint');
@@ -21,7 +21,7 @@ const help={
 };
 function selectMode(next){mode=next;modeButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));hint.textContent=help[mode];draw();}
 modeButtons.forEach(b=>b.addEventListener('click',()=>selectMode(b.dataset.mode)));
-function markHistory(){if(!gesture?.changed||combat.phase!=='prep'){gesture=null;return;}if(history.length===MAX_HISTORY)history.shift();history.push(gesture);gesture=null;undoButton.disabled=false;}
+function markHistory(){if(!gesture?.changed||!['ready','prep'].includes(combat.phase)){gesture=null;return;}if(history.length===MAX_HISTORY)history.shift();history.push(gesture);gesture=null;undoButton.disabled=false;}
 function perform(cell){
  if(!cell||['victory','defeat'].includes(combat.phase))return;
  if(!gesture)gesture={before:copyGame(state),materialDelta:0,changed:false};
@@ -45,7 +45,7 @@ function finish(e){if(e.pointerId!==pointerId)return;pointerId=null;previousCell
 board.addEventListener('pointerup',finish);board.addEventListener('pointercancel',finish);board.addEventListener('lostpointercapture',finish);
 board.addEventListener('contextmenu',e=>e.preventDefault());
 undoButton.addEventListener('click',()=>{
- if(!history.length||combat.phase!=='prep')return;
+ if(!history.length||!['ready','prep'].includes(combat.phase))return;
  const action=history.pop(),current=state;
  state.belts={ore:new Map(action.before.belts.ore),ammo:new Map(action.before.belts.ammo)};
  state.buildings=action.before.buildings.map(b=>{
@@ -106,22 +106,23 @@ function updateHUD(net){
  document.querySelector('#factories').textContent=net.factories.length;
  document.querySelector('#status').textContent=mines.every(b=>net.mineOwner.has(b.id))&&turrets.every(b=>net.turretProviders.has(b.id))?'Verbunden':'Netz getrennt';
  for(const v of ['ore','ammo','material'])document.querySelector('#'+v).textContent=`${state.resources[v].toFixed(1)} / ${CAPS[v]}`;
- document.querySelector('#rates').textContent=`Erzförderung: ${[...net.mineOwner].length*RATE.mine}/s · Fabriken: ${net.factories.length*RATE.factory} Einh./s`;
+ document.querySelector('#rates').textContent=combat.phase==='ready'?'Förderung und Produktion: PAUSIERT bis Welle 1':`Erzförderung: ${[...net.mineOwner].length*RATE.mine}/s · Fabriken: ${net.factories.length*RATE.factory} Einh./s`;
  document.querySelector('#build-cost').textContent=COSTS[mode]?`Kosten: ${COSTS[mode]} Baumaterial ${state.resources.material+1e-8>=COSTS[mode]?'✓':'· zu wenig'}`:'';
  document.querySelector('#enemy-count').textContent=combat.enemies.length;
  document.querySelector('#kills').textContent=combat.kills;
  const wave=document.querySelector('#wave-status'),button=document.querySelector('#wave-button');
- if(combat.phase==='prep'){wave.textContent=`Vorbereitung ${combat.wave+1}/3: ${Math.ceil(combat.countdown)} s`;button.textContent='Welle früher starten';button.disabled=false;}
+ if(combat.phase==='ready'){wave.textContent='Bauphase · Produktion pausiert';button.textContent='▶ Welle 1 starten';button.disabled=false;}
+ else if(combat.phase==='prep'){wave.textContent=`Vorbereitung ${combat.wave+1}/3: ${Math.ceil(combat.countdown)} s`;button.textContent='Welle früher starten';button.disabled=false;}
  else if(combat.phase==='fight'){wave.textContent=`⚔ Angriffswelle ${combat.wave}/3`;button.textContent='Welle läuft …';button.disabled=true;}
  else if(combat.phase==='siege'){wave.textContent='Alle 3 Wellen abgewehrt';button.textContent='Bunker angreifen!';button.disabled=true;}
  else{wave.textContent=combat.phase==='victory'?'🏆 Sieg – Bunker zerstört':'💥 Niederlage – keine Fabrik';button.textContent='Neu starten';button.disabled=true;}
  document.querySelector('#wave-message').textContent=combat.message;
  document.querySelector('#bunker-status').textContent=`Bunker: ${combat.bunker.hp.toFixed(1)} / ${COMBAT.bunkerHp} HP`;
  document.querySelector('#unit-status').textContent=`${combat.units.length} unterwegs · ${combat.orders.length} im Bau`;
- document.querySelector('#order-unit').disabled=['victory','defeat'].includes(combat.phase)||combat.orders.length>=3||!net.factories.length||state.resources.material<COSTS.unit;
- undoButton.disabled=combat.phase!=='prep'||history.length===0;
+ document.querySelector('#order-unit').disabled=['victory','defeat'].includes(combat.phase)||combat.phase==='ready'||combat.orders.length>=3||!net.factories.length||state.resources.material<COSTS.unit;
+ undoButton.disabled=!['ready','prep'].includes(combat.phase)||history.length===0;
 }
 selectMode('ore');draw();
 // No fast-forward on inactive browser tabs; economical and fighting simulation
 // advance in the same fixed step for predictable testing.
-setInterval(()=>{if(document.hidden)return;tickEconomy(state,.1);tickCombat(state,combat,.1);if(combat.phase!=='prep')history.length=0;draw();},100);
+setInterval(()=>{if(document.hidden)return;tickGame(state,combat,.1);if(!['ready','prep'].includes(combat.phase))history.length=0;draw();},100);
