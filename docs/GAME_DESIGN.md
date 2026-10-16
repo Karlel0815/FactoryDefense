@@ -43,3 +43,6 @@ Eine Karte, Hauptfabrik, Startmine, mindestens ein zusätzlich erschließbares E
 - Zielpriorität, Angriffswege, Angriffseinheitenproduktion und Wegfindung im Detail.
 - Konkrete Missionsabfolge, Forschungsmeilensteine, Kampagnenbelohnungen und Speicherformat.
 - Technische Implementierung und spielerisches Balancing.
+
+## DEV2 – Implementierung (2026-10-16)
+Die erste Wirtschaft ist programmiert und nutzt zunächst **Testwerte**, keine endgültigen Balancingbeschlüsse: Hauptfabrik dient als erste Produktionsstätte; fördernde verbundene Mine 4 Erz/s; produzierende Fabrik 2 Güter/s (Munition/Baumaterial). Startkapital 50 Baumaterial, Lagerlimits Erz 100 / Munition 100 / Baumaterial 80. Kosten pro Wegfeld 2, Mine 18, zusätzliche Fabrik 24, Reparatur pro HP 3. Auflösung fractional; UI zeigt eine Dezimalstelle. Abbau intakter Objekte gibt die Hälfte der ursprünglichen Materialkosten (abgerundet) zurück. Produktionsstopp bei Unterbrechungen und Kapazitätsgrenzen wie beschlossen. Alle Zahlen und Rückgewinnungsregeln sind **vorläufige Testannahmen**, nicht neue verbindliche Designentscheidungen.

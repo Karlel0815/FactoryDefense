@@ -4,34 +4,42 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b1723" />
-  <title>FactoryDefense – DEV1</title>
+  <title>FactoryDefense – DEV2</title>
   <link rel="stylesheet" href="src/style.css" />
   <script type="module" src="src/game.js"></script>
 </head>
 <body>
 <main class="app">
   <header>
-    <div><h1>FACTORY<span>DEFENSE</span></h1><p>DEV1 · RASTER & VERSORGUNG</p></div>
+    <div><h1>FACTORY<span>DEFENSE</span></h1><p>DEV2 · PRODUKTION & VERSORGUNG</p></div>
     <button id="reset" class="quiet" type="button">Neustart</button>
   </header>
+  <section class="resources" aria-label="Ressourcenbestand">
+    <div><small>⛏ Erz</small><strong id="ore">0 / 100</strong></div>
+    <div><small>🎯 Munition</small><strong id="ammo">0 / 100</strong></div>
+    <div><small>🔧 Baumaterial</small><strong id="material">50 / 80</strong></div>
+  </section>
   <section class="hud" aria-label="Netzstatus">
     <div><small>Minen verbunden</small><strong id="connected">1 / 1</strong></div>
     <div><small>Wege im Netz</small><strong id="roads">2 / 2</strong></div>
+    <div><small>Aktive Fabriken</small><strong id="factories">1</strong></div>
     <div><small>Status</small><strong id="status">Bereit</strong></div>
   </section>
   <div class="board-wrap">
     <canvas id="board" width="1000" height="600" tabindex="0" aria-label="Baukarte, Raster mit Hauptfabrik, Erzen, Minen und Wegen"></canvas>
   </div>
-  <p class="hint" id="hint" role="status" aria-live="polite">Ziehe mit dem Werkzeug „Weg“ über freie Felder. Tippe auf ein Erzfeld, um dort eine Mine zu errichten.</p>
+  <p class="hint" id="hint" role="status" aria-live="polite">Startmine fördert Erz; die Hauptfabrik produziert automatisch Munition und Baumaterial. Ziehe weitere Versorgungswege oder baue eine Fabrik.</p>
   <nav class="toolbar" aria-label="Bauwerkzeuge">
-    <button type="button" data-mode="road" aria-pressed="true">🟩 Weg</button>
-    <button type="button" data-mode="mine" aria-pressed="false">⛏ Mine</button>
+    <button type="button" data-mode="road" aria-pressed="true">🟩 Weg · 2</button>
+    <button type="button" data-mode="mine" aria-pressed="false">⛏ Mine · 18</button>
+    <button type="button" data-mode="factory" aria-pressed="false">⚙ Fabrik · 24</button>
     <button type="button" data-mode="erase" aria-pressed="false">⌫ Entfernen</button>
-    <button type="button" data-mode="repair" aria-pressed="false">🔧 Reparatur</button>
+    <button type="button" data-mode="repair" aria-pressed="false">🔧 Reparatur · 3</button>
     <button type="button" data-mode="damage" aria-pressed="false">⚡ Testschaden</button>
   </nav>
-  <div class="footer-actions"><button id="undo" type="button" disabled>↶ Rückgängig</button><span>DEV1: Bauen kostenlos · Kampf und Produktion folgen</span></div>
-  <p class="note">Grün: versorgter Weg oder angeschlossene Mine. Grau: vom HQ getrennt. Rot: beschädigt oder zerstört. Die Funktion „Testschaden“ simuliert einzelne Treffer. Zerstörte Wege mit „Weg“ neu bauen.</p>
+  <div class="footer-actions"><button id="undo" type="button" disabled>↶ Rückgängig</button><span id="build-cost">Kosten: 2 Material</span></div>
+  <p class="rates" id="rates" aria-live="off">Förderung: 4 Erz/s · Fabrik: 2 Einh./s</p>
+  <p class="note">Automatische Produktion 50:50; volle Produktlager leiten Kapazität um. Grün = versorgt, Grau = getrennt. Erzeugnisse landen in gemeinsamen Beständen. Entfernen gibt 50 % der Materialkosten intakter Anlagen zurück. Testschaden simuliert Treffer. DEV3 bringt echte Kämpfe.</p>
 </main>
 </body>
 </html>

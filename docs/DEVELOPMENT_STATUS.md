@@ -1,37 +1,30 @@
 # FactoryDefense – Entwicklungsstand
 
-**Datum:** 2026-10-16  
-**Repository:** `Karlel0815/FactoryDefense` (ehemals Moon Dome)  
-**Arbeitsbranch:** `feat/dev1-grid-network`  
-**Dokumentations-Baseline:** `598dee1eb612c1875682db33dc6a01905adcb9a7`  
-**DEV1-Commit:** GitHub-Branch-HEAD (siehe Commit-Historie des Branches)  
-**Main:** Moon-Dome-Altstand `a6649de5b3d7d7503ce4baf11a543218d39cf786`, vorerst unverändert.
+**Datum:** 16.10.2026 · **Projekt:** FactoryDefense (Arbeitstitel)  
+**Repository:** `Karlel0815/FactoryDefense` (aus Moon Dome umbenannt)  
+**Entwicklungsbranch:** `feat/dev2-economy`  
+**DEV1-Referenz:** `cd67d3169a5ff3d0fa1631ce61fbedf0da944ec9`  
+**DEV1-Playtest:** Nutzer bestätigte „Jop geht“, dokumentiert im Folgecommit `6e88cf61f79a12da91b7863f2827293b6ca3bf73`.  
+**DEV2:** Aktueller Commit siehe Branch-HEAD; nicht auf `main` freigegeben.  
+**Main:** Enthält weiterhin den alten Moon-Dome-Prototyp, zuletzt `a6649de5b3d7d7503ce4baf11a543218d39cf786`. Kein Merge.
 
-## IMPLEMENTIERT in DEV1
-- Canvas-Karte mit 20 x 12 Rasterzellen, Hauptfabrik, vier sichtbaren Erzfeldern, Startmine.
-- Selbst gezeichnete Versorgungswege (Pointerevents, Maus/Touch), Linienlücken aufgefüllt; diagonales Zeichnen wird in orthogonale Segmente aufgelöst.
-- Minen auf Erzfeldern, Abreißen von Minen und Wegen; Hauptfabrik ist nicht abreißbar.
-- Automatische Neuberechnung der Verbindung nach jedem Eingriff; getrennte Inseln bleiben unversorgt.
-- HP und Testschaden für Wege/Gebäude; Reparatur nur beschädigter, nicht zerstörter Objekte. Neubau zerstörter Wege, zerstörte Minen erst entfernen und wieder bauen.
-- UI für verbundene Minen und Wegsegmente, Werkzeugwahl, Neustart und Rückgängig.
-- Keine Ressourcen- oder Produktionskosten – **bewusst noch nicht implementiert**.
+## IMPLEMENTIERT
+DEV1 unverändert weiter nutzbar: Raster, HQ, Erzfelder, Minen, Transportnetz, Wegzeichnen, Schaden/Reparatur (Test), Rückgängig und Neubau.
+DEV2 ergänzt: `src/economy.js` mit dynamischen Ressourcenbeständen und Limits; verbundene Minen erzeugen Erz, HQ verarbeitet Erz als Anfangsfabrik; weitere Fabriken platzierbar; Output 50:50 Munition/Baumaterial, Übertrag bei vollem Bestand. Verbundene Förder- und Fabrikgebäude sind wirtschaftlich aktiv, getrennte nicht. Bauen/Reparieren kostet Baumaterial; intakte Bauten lassen sich gegen Teilrückerstattung abreißen. Undo nimmt nur strukturelle Eingriffe und deren Materialdifferenz zurück, nicht die zwischenzeitlich erzeugte Produktion. Offline-Fortschritt wird nicht aufsummiert.
 
-## TESTS / QA
-- 8 lokale Node.js-Unit-Tests für Rastergrenzen, schnelles Ziehen/Diagonalen, Netzunterbrechung, getrennte Inseln, Platzierungsregeln, Schaden/Reparatur, Neubau und Snapshot-Rückgängig: **8/8 bestanden**.
-- Browserprüfung mittels Chromium/Playwright versucht: **blockiert durch Administrator-Navigationssperre**. Daher **nicht als bestanden** markieren.
-- Reale Smartphone- und Touchscreen-Prüfung: **OFFEN**.
-- GitHub CI: noch nicht nachgewiesen. Nicht als erfolgreich behaupten.
+## VERIFIZIERTE TESTS
+- 21 lokale `npm test` Node-Tests **21/21 bestanden** (8 DEV1 Regression + 13 DEV2).
+- Desktop- und simulierte Touch-Interaktion der portablen HTML-Vorschau via Playwright/Chromium **jeweils bestanden**: Munitions-/Erzproduktion, dreifacher Wegschaden und Netztrennung, Weg-Neubau, Undo, zusätzliche Fabrik. Keine Script-Ausnahmen.
+- Chromium-Navigation auf `localhost` von Testumgebung mit `ERR_BLOCKED_BY_ADMINISTRATOR` unterbunden; deshalb regulärer Server-Aufruf im echten Browser hier **nicht bestätigt**.
+- GitHub Actions nach Push: **Status noch prüfen**, nicht automatisch grün behaupten.
+- Reale Smartphone-Hardware: **OFFEN**.
 
-## OFFEN / Korrekturbedarf
-- Browser- und Smartphone-Bedienbarkeit mit manueller Abnahme prüfen; 20-Spalten-Raster kann bei kleinen Mobilgeräten zu klein sein.
-- Mehrere Eingaben und Undo im echten Browser prüfen (Unit-Test prüft nur Modell-Snapshot).
-- Produktion, Munition, Gebäude-Baukosten, Wellen, Kampfeinheiten (DEV2–DEV4).
-- Keine Freigabe für `main` / öffentliche Veröffentlichung erteilt.
+## OFFEN / TECHNISCHE RISIKEN
+- 20-Spalten-Raster auf kleinen Smartphones teilweise winzige Tap-Ziele; realer Gerätetest erforderlich.
+- Reale Versorgung durch Geschütze und Munitionsverbrauch fehlen (DEV3).
+- Bei vollständigem Materialmangel und zerstörtem Versorgungsnetz kann ein Softlock auftreten; DEV2 bietet Neustart und Teilrückgewinnung durch Abriss, aber noch keine vollständige Schutzregel.
+- Die wirtschaftlichen Werte (Förderung, Umwandlung, Baukosten, Limits, Abriss-Rückgewinnung) sind **Testannahmen**.
+- Keine Wellen, Angriffe, Verluste, Kampfeinheiten oder Kampagne.
 
-## Aktive Entscheidung
-Neuer Spielcode wird nur in Entwicklungsbranches geändert; Forgefront bleibt unangetastet. Code-Reuse dort nur nach Prüfung. Projektstatus und Entscheidungen werden getrennt geführt.
-
-## Nutzerfeedback / manuelle Funktionsprüfung (2026-10-16)
-- Nutzer meldet zur DEV1-Vorschau: „Jop geht“ – grundlegender manueller Funktionstest positiv.
-- Testumfang, Browsermodell und verwendetes Gerät wurden nicht einzeln protokolliert; daher **keine** vollständige Smartphone-, Browserkompatibilitäts- oder Regressionsfreigabe behaupten.
-- DEV1 kann als nutzbarer technischer Prototyp betrachtet werden; DEV2 bleibt **OFFEN** und erfordert gesonderte Umsetzungsfreigabe. `main` bleibt unverändert.
+## NÄCHSTER SCHRITT
+Nutzer prüft DEV2-Vorschau. Erst danach DEV3 (Verteidigung) spezifizieren/freigeben. Änderungen weiterhin nur über Entwicklungsbranch und geprüfte Commits. Forgefront unverändert.

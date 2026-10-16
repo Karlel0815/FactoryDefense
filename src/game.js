@@ -1,6 +1,7 @@
 import { applyAction, copyGame, createGame, MAX_HP } from './model.js';
 import { analyzeNetwork } from './network.js';
 import { key, lineCells, positionToCell } from './grid.js';
+import { CAPS, COSTS, RATE, tickEconomy } from './economy.js';
 
 const board = document.querySelector('#board');
 const ctx = board.getContext('2d');
@@ -12,15 +13,16 @@ let mode = 'road';
 let previousCell = null;
 let dragging = false;
 let pointerId = null;
-let pendingUndo = null;
+let gesture = null;
 const history = [];
 const MAX_HISTORY = 80;
 const help = {
-  road: 'Weg: mit Maus oder Finger über freie Felder ziehen. Verbindungen verlaufen waagrecht/senkrecht.',
-  mine: 'Mine: auf ein sichtbares, unbebautes Erzfeld tippen. Ohne Weg bleibt sie unversorgt.',
-  erase: 'Entfernen: Wege oder Minen abreißen, Hauptfabrik bleibt erhalten.',
-  repair: 'Reparatur: beschädigten Weg oder Gebäude antippen. Zerstörtes muss neu gebaut werden.',
-  damage: 'Testschaden (nur DEV1): Ein Treffer pro Antippen. Ein Weg mit null HP unterbricht das Netz.'
+  road: 'Weg (2 Material/Feld): mit Maus oder Finger über freie Felder ziehen.',
+  mine: 'Mine (18 Material): auf ein freies Erzfeld tippen. Ohne Weg bleibt sie unversorgt.',
+  factory: 'Fabrik (24 Material): auf eine freie Fläche tippen. Sie verarbeitet Erz zu Munition und Baumaterial.',
+  erase: 'Entfernen: Wege, Minen oder Fabriken abreißen. Intakte Gebäude geben halbes Baumaterial zurück.',
+  repair: 'Reparatur (3 Material/HP): beschädigten Weg oder Gebäude antippen. Zerstörtes neu bauen.',
+  damage: 'Testschaden (nur DEV2): Ein Treffer pro Antippen. Eine zerstörte Verbindung unterbricht das Netz.'
 };
 
 function selectMode(next) {
@@ -31,17 +33,22 @@ function selectMode(next) {
 modeButtons.forEach(b => b.addEventListener('click', () => selectMode(b.dataset.mode)));
 
 function recordUndo() {
-  if (!pendingUndo) return;
+  if (!gesture?.changed) { gesture = null; return; }
   if (history.length >= MAX_HISTORY) history.shift();
-  history.push(pendingUndo);
-  pendingUndo = null;
+  history.push(gesture);
+  gesture = null;
   undoButton.disabled = false;
 }
 function act(cell) {
   if (!cell) return;
-  if (!pendingUndo) pendingUndo = copyGame(state);
+  if (!gesture) gesture = { before: copyGame(state), materialDelta: 0, changed: false };
+  const beforeMaterial = state.resources.material;
   if (applyAction(state, mode, cell.x, cell.y)) {
+    gesture.changed = true;
+    gesture.materialDelta += state.resources.material - beforeMaterial;
     draw();
+  } else if (mode !== 'road' && mode !== 'erase') {
+    hint.textContent = `Aktion nicht möglich: Prüfe Feld, Lagerbestand und Baukosten (${COSTS[mode] ?? 0} Material).`;
   }
 }
 function eventCell(e) { return positionToCell(e.clientX, e.clientY, board.getBoundingClientRect(), state.width, state.height); }
@@ -64,23 +71,25 @@ function endPointer(e) {
   if (!dragging || e.pointerId !== pointerId) return;
   dragging = false; previousCell = null; pointerId = null;
   if (board.hasPointerCapture(e.pointerId)) board.releasePointerCapture(e.pointerId);
-  // No-op gestures must not create an undo entry.
-  if (pendingUndo && JSON.stringify(serialize(state)) !== JSON.stringify(serialize(pendingUndo))) recordUndo();
-  else pendingUndo = null;
+  recordUndo();
 }
 board.addEventListener('pointerup', endPointer);
 board.addEventListener('pointercancel', endPointer);
 board.addEventListener('lostpointercapture', endPointer);
 board.addEventListener('contextmenu', e => e.preventDefault());
-function serialize(s) { return { roads: [...s.roads], buildings: s.buildings, nextId: s.nextId }; }
 undoButton.addEventListener('click', () => {
   if (!history.length) return;
-  state = history.pop();
+  const last = history.pop();
+  // Revert structural edits and their material cost, preserving earned production.
+  state.roads = new Map(last.before.roads);
+  state.buildings = last.before.buildings.map(b => ({ ...b }));
+  state.nextId = last.before.nextId;
+  state.resources.material = Math.max(0, Math.min(CAPS.material, state.resources.material - last.materialDelta));
   undoButton.disabled = history.length === 0;
   draw();
 });
 document.querySelector('#reset').addEventListener('click', () => {
-  state = createGame(); history.length = 0; pendingUndo = null;
+  state = createGame(); history.length = 0; gesture = null;
   undoButton.disabled = true; draw();
 });
 
@@ -113,13 +122,26 @@ function draw() {
     ctx.fillStyle=b.hp===0?'#763d46':b.hp<MAX_HP?'#976643':active?'#3b86a8':'#52616d';
     ctx.beginPath();ctx.roundRect(b.x*tw+3,b.y*th+3,tw-6,th-6,7);ctx.fill();
     ctx.font='bold 24px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle='#ffffff';ctx.fillText(b.type==='hq'?'⌂':'⛏',cx,cy-3);
-    ctx.font='bold 10px system-ui';ctx.fillText(b.type==='hq'?'HQ':'MINE',cx,cy+16);
+    ctx.fillStyle='#ffffff';ctx.fillText(b.type==='hq'?'⌂':b.type==='mine'?'⛏':'⚙',cx,cy-3);
+    ctx.font='bold 10px system-ui';ctx.fillText(b.type==='hq'?'HQ':b.type==='mine'?'MINE':'FAB',cx,cy+16);
     if (b.hp<MAX_HP) {ctx.fillStyle='#ecb96b';ctx.fillRect(b.x*tw+6,(b.y+1)*th-7,(tw-12)*(b.hp/MAX_HP),3);}
   }
   const mines=state.buildings.filter(b=>b.type==='mine'&&b.hp>0);
   document.querySelector('#connected').textContent=`${mines.filter(b=>net.connectedBuildings.has(b.id)).length} / ${mines.length}`;
   document.querySelector('#roads').textContent=`${net.suppliedRoads.size} / ${[...state.roads.values()].filter(hp=>hp>0).length}`;
-  document.querySelector('#status').textContent=mines.every(b=>net.connectedBuildings.has(b.id))?'Versorgt':'Netz getrennt';
+  const activeFactories=state.buildings.filter(b => b.hp>0 && (b.type==='factory'||b.type==='hq') && net.connectedBuildings.has(b.id)).length;
+  document.querySelector('#factories').textContent=activeFactories;
+  const available = mines.every(b=>net.connectedBuildings.has(b.id));
+  document.querySelector('#status').textContent=available?'Versorgt':'Netz getrennt';
+  for (const resource of ['ore','ammo','material']) {
+    document.querySelector('#'+resource).textContent=`${state.resources[resource].toFixed(1)} / ${CAPS[resource]}`;
+  }
+  document.querySelector('#rates').textContent=`Förderung: ${(mines.filter(b=>net.connectedBuildings.has(b.id)).length*RATE.mine).toFixed(0)} Erz/s · Fabrik: ${activeFactories*RATE.factory} Einh./s`;
+  const enough = state.resources.material >= COSTS[mode];
+  if (mode === 'road' || mode === 'mine' || mode === 'factory' || mode === 'repair') {
+    document.querySelector('#build-cost').textContent=`Kosten: ${COSTS[mode]} Material ${enough ? '✓' : '· zu wenig Material'}`;
+  } else document.querySelector('#build-cost').textContent='';
 }
 selectMode('road');draw();
+// Run only in active tabs to avoid accumulating free offline resources.
+setInterval(() => { if (!document.hidden) { tickEconomy(state, 0.1); draw(); } }, 100);

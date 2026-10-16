@@ -1,34 +1,35 @@
-# FactoryDefense – Aufgaben und Abnahme
+# FactoryDefense – DEV-Plan und offener Testumfang
 
-## DEV1 – Raster & Bauwege
-- [x] Canvas-Spielraster und Startkarte
-- [x] Hauptfabrik, sichtbare Erzfelder, Minen platzieren
-- [x] Versorgungswege zeichnen, abreißen, wiederaufbauen
-- [x] Netzprüfung (Hauptfabrik als Quelle, abgetrennte Inseln)
-- [x] Testschaden / Reparatur / Objektzerstörung und Neubau
-- [x] Werkzeug-UI, Maus-/Touch-Pointerhandler, Undo/Neustart
-- [x] 8 lokale automatisierte Logiktests (bestanden)
-- [ ] Browser-Interaktionstest (Laufzeit blockiert)
-- [ ] Reale Smartphone-Abnahme und kleine Viewports
-- [ ] DEV1-Balancing/Grafik-Freigabe durch Nutzer
+## DEV1 – Raster & Versorgung (abgeschlossen als Prototyp)
+- [x] Raster, Wegzeichnen, Minen, Unterbrechung, Schaden/Reparatur, Undo, 8 Logiktests
+- [x] Einfacher Nutzer-Funktionstest positiv
+- [ ] Reale Smartphone-Abnahme mit überprüfter Touch-Bedienung
 
-## DEV2 – Ressourcen & Versorgung (OFFEN, eigene Freigabe)
-- [ ] Zentraler Erz-, Munitions- und Baumaterialvorrat samt Limits
-- [ ] Erzförderung nur bei Versorgung
-- [ ] 50:50-Produktion und Umleitung bei vollem Bestand
-- [ ] Bau- und Reparaturkosten, Softlock-Vermeidung, Regressionstests
+## DEV2 – Ressourcen und Wirtschaft (Code und lokale QA abgeschlossen)
+- [x] Erzförderung nur angeschlossener Minen
+- [x] Zentrale Bestände mit Lagerlimits und HUD
+- [x] 50:50-Produktion und automatische Umleitung bei vollem Bestand
+- [x] Zusätzliche Fabrik bauen, nur verbunden aktiv
+- [x] Materialkosten für Minen, Wege, Fabriken, Reparaturen
+- [x] Testschaden, Abkopplung, Verlust der HQ-Produktion
+- [x] Abriss-Rückgewinnung als vorläufige Testregel
+- [x] 13 neue Node-Tests + 8 Regressionstests, lokal bestanden
+- [x] Simulierter Touch- und Desktop-Interaktionstest der portablen Vorschau bestanden
+- [ ] Realer Smartphone-Test der regulären Version
+- [ ] GitHub-CI-Status kontrollieren und dokumentieren
+- [ ] DEV2-Spielgefühl und Wirtschaftsbalance durch Nutzer bewerten
 
-## DEV3 – Verteidigung (OFFEN)
-- [ ] Geschütz, echte Munition, Gegnerwellen, Infrastrukturangriffe
-- [ ] Schäden/Reparatur jederzeit, Verluste und Neustart
-- [ ] Tests für Munition, Zielwahl, Netzkappung, Niederlage
+## DEV3 – Verteidigung (NICHT implementiert)
+- [ ] Geschütze, tatsächlicher Munitionsverbrauch, Reichweite, Schüsse
+- [ ] Angriffswellen, Gegner-Zielpriorität, Gebäudeschäden
+- [ ] Reparaturen jederzeit, Unterbrechung im Kampf, Niederlage
+- [ ] End-to-End-Tests und unabhängige Critic-Prüfung
 
-## DEV4 – Offensive & Mission (OFFEN)
-- [ ] Einheiten auf Bestellung, Zielversand
-- [ ] Bunkerzerstörung, Missionserfolg, übergreifender Fortschritt
+## DEV4 – Offensive / Kampagne (NICHT implementiert)
+- [ ] Einheiten auf Bestellung; automatische Zielbewegung
+- [ ] Bunkerzerstörung, Missionserfolg, Meilenstein-Freischaltungen
 
-## Critic-Feststellungen
-- Touch-Zellen bei 20 Spalten auf Smartphones sind möglicherweise zu klein.
-- Bedien-Undo und Ziehen müssen im echten Browser geprüft werden.
-- Netzmodell im DEV1 hat eine zentrale HQ-Wurzel ohne reale Transportkapazität, wie designseitig vorgesehen.
-- DEV1 ist ein technischer Baustand; kein vollwertiger spielbarer Kampagnenlevel.
+## Critic / Balance
+- [ ] Softlock-Schutz bei völligem Ressourcenmangel besprechen
+- [ ] Kosten und Produktionsraten testen (nur Annahmen in DEV2)
+- [ ] Energie-/Performanceprofil auf echtem Mobilgerät testen

@@ -1,34 +1,40 @@
-# FactoryDefense – DEV1 Raster & Versorgungsnetz
+# FactoryDefense – DEV2: Ressourcen & Produktion
 
-**Eigenständiges Fabrik-Verteidigungsspiel.** Nicht Forgefront und nicht Moon Dome.
+Eigenständiges Fabrik-Verteidigungsspiel im **Entwicklungsbranch** `feat/dev2-economy`.
+Dieses Repo wurde aus Moon Dome umbenannt; die historische Moon-Dome-Version bleibt im `main`-Branch erhalten. Forgefront ist ein getrenntes Projekt.
 
-## Aktueller Stand
-DEV1-Prototyp: Rasterkarte, sichtbare Erzfelder, Hauptfabrik und Startmine, Minen bauen, Versorgungswege mit Maus/Finger zeichnen, Verbundenheit anzeigen, Wege/Minen entfernen, simulierten Schaden setzen, beschädigte Anlagen reparieren, zerstörte Wege neu bauen, Rückgängig und Neustart. **Noch keine Produktion, Wellen oder Kampfeinheiten.** Bauen kostet in DEV1 keine Ressourcen.
+## Aktuell implementiert
+- 20 × 12 Rasterkarte, Hauptfabrik, Erzfelder, Minen, selbst gezeichnete und zerstörbare Versorgungswege
+- Verbindungsauswertung; abgeschnittene Minen fördern nicht, getrennte Zusatzfabriken produzieren nicht
+- Zentrale Bestände und feste Kapazitäten für Erz, Munition, Baumaterial; keine Lagerhäuser
+- Automatische 50:50-Produktion in verbundener HQ-Fabrik, zusätzliche Fabriken gegen Baumaterial
+- Freiwerdende Kapazität bei vollem Produktlager wird auf anderes Produkt umgeleitet
+- Kosten für Wege, Minen, Fabriken und Reparaturen; Testschaden, Abriss, Wiederaufbau, Rückgängig
+- Schnellzugriff per Maus/Touch; portable Einzeldatei-Vorschau über Build-Skript erzeugbar
 
 ## Starten
-Ein statischer Webserver ist für ES-Module nötig (einfaches Öffnen über file:// kann Browser-CORS auslösen):
-
 ```bash
 python3 -m http.server 8000
-# Dann http://localhost:8000/
+# dann im Browser http://localhost:8000/
 ```
+Für eine lokal ohne Webserver verwendbare Vorschau:
+```bash
+node tools/build-preview.mjs
+# preview.html im Browser öffnen
+```
+Die reguläre Version verwendet ES-Module und sollte über einen Server gestartet werden.
 
-## Testen
+## Tests
 ```bash
 npm test
 ```
-Ohne externe Node-Pakete. Chromium-Browsertest konnte im Entwicklungscontainer wegen Administrator-Navigationssperre nicht abgeschlossen werden. Reale Touch-/Smartphone-Tests sind **offen**.
+21 lokale Node-Tests (8 DEV1 + 13 DEV2) bestanden. Zusätzlich Desktop-/simulierter Touch-Interaktionstest mit portabler Vorschau bestanden. Direkter Testserver-Aufruf im automatisierten Browser wurde von der Laufzeitumgebung blockiert; **echter Smartphone-Test bleibt offen**.
 
-## Wichtige Dateien
-- `index.html` – Start
-- `src/game.js` – Canvas-Bedienung und Anzeige
-- `src/grid.js` – Raster / Streichlinien
-- `src/model.js` – Bauen, Entfernen, Schaden, Reparatur
-- `src/network.js` – Versorgung über verbundene Straßen
-- `tests/dev1.test.mjs` – automatisierte Logiktests
-- `docs/GAME_DESIGN.md`, `docs/DECISIONS.md` – Spielregeln
-- `docs/DEVELOPMENT_STATUS.md` – tatsächlicher Entwicklungsstand
-- `docs/TASKS.md` – nächste Schritte
+## Projektgedächtnis
+- [Spieldesign](docs/GAME_DESIGN.md)
+- [Beschlüsse](docs/DECISIONS.md)
+- [Implementierungsstand/QA](docs/DEVELOPMENT_STATUS.md)
+- [Backlog](docs/TASKS.md)
 
-## Sicherheit
-Das Repository wurde aus dem früheren Moon Dome umbenannt. **Die Vorgängerhistorie bleibt erhalten.** Ein neuer Entwicklungsbranch `feat/dev1-grid-network` enthält FactoryDefense. `main` bleibt bis expliziter Freigabe auf dem ehemaligen Moon-Dome-Stand.
+**Nicht implementiert:** Echte Gegnerwellen, Geschützfeuer, Munitionsverbrauch durch Waffen, Kampfeinheiten, Missionen und Meta-Progression.
+**Werte sind DEV2-Balancingannahmen**, nicht endgültige Regeln. **Noch keine Freigabe für `main`**.

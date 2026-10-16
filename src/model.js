@@ -1,7 +1,8 @@
 import { inBounds, key } from './grid.js';
+import { CAPS, COSTS, START_RESOURCES, takeMaterial, salvageMaterial } from './economy.js';
 
 export const MAX_HP = 3;
-export const MODES = ['road', 'mine', 'erase', 'repair', 'damage'];
+export const MODES = ['road', 'mine', 'factory', 'erase', 'repair', 'damage'];
 
 export function createGame() {
   return {
@@ -12,6 +13,7 @@ export function createGame() {
       { id: 'hq', type: 'hq', x: 2, y: 6, hp: MAX_HP },
       { id: 'mine-1', type: 'mine', x: 5, y: 6, hp: MAX_HP }
     ],
+    resources: { ...START_RESOURCES },
     nextId: 2
   };
 }
@@ -20,7 +22,8 @@ export const copyGame = state => ({
   ...state,
   ores: new Set(state.ores),
   roads: new Map(state.roads),
-  buildings: state.buildings.map(b => ({ ...b }))
+  buildings: state.buildings.map(b => ({ ...b })),
+  resources: { ...state.resources }
 });
 
 export function applyAction(state, mode, x, y) {
@@ -29,21 +32,26 @@ export function applyAction(state, mode, x, y) {
   const building = state.buildings.find(b => b.x === x && b.y === y);
   const roadHP = state.roads.get(tile);
   if (mode === 'road') {
-    if (building || state.ores.has(tile) || roadHP > 0) return false;
+    if (building || state.ores.has(tile) || roadHP > 0 || !takeMaterial(state, mode)) return false;
     state.roads.set(tile, MAX_HP);
     return true;
   }
-  if (mode === 'mine') {
-    if (!state.ores.has(tile) || building || roadHP !== undefined) return false;
-    state.buildings.push({ id: `mine-${state.nextId++}`, type: 'mine', x, y, hp: MAX_HP });
+  if (mode === 'mine' || mode === 'factory') {
+    if (building || roadHP !== undefined || (mode === 'mine') !== state.ores.has(tile) || !takeMaterial(state, mode)) return false;
+    state.buildings.push({ id: `${mode}-${state.nextId++}`, type: mode, x, y, hp: MAX_HP });
     return true;
   }
   if (mode === 'erase') {
     if (building && building.type !== 'hq') {
+      salvageMaterial(state, building.type, building.hp);
       state.buildings = state.buildings.filter(b => b.id !== building.id);
       return true;
     }
-    if (roadHP !== undefined) { state.roads.delete(tile); return true; }
+    if (roadHP !== undefined) {
+      salvageMaterial(state, 'road', roadHP);
+      state.roads.delete(tile);
+      return true;
+    }
     return false;
   }
   if (mode === 'damage') {
@@ -52,8 +60,14 @@ export function applyAction(state, mode, x, y) {
     return false;
   }
   if (mode === 'repair') {
-    if (building?.hp > 0 && building.hp < MAX_HP) { building.hp++; return true; }
-    if (roadHP > 0 && roadHP < MAX_HP) { state.roads.set(tile, roadHP + 1); return true; }
+    if (building?.hp > 0 && building.hp < MAX_HP) {
+      if (!takeMaterial(state, mode)) return false;
+      building.hp++; return true;
+    }
+    if (roadHP > 0 && roadHP < MAX_HP) {
+      if (!takeMaterial(state, mode)) return false;
+      state.roads.set(tile, roadHP + 1); return true;
+    }
     return false;
   }
   return false;

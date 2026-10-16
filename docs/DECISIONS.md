@@ -32,3 +32,10 @@
 - 2026-10-16: FD-001 bis FD-017 aus der bisherigen Designabstimmung zusammengestellt.
 - Früherer Beschluss „Reparaturen nur in Pausen“ wurde vom Nutzer ausdrücklich **ersetzt**: Reparaturen sind jederzeit möglich.
 - Die zuvor vorgeschlagenen drei Produktionsmodi sind **nicht** beschlossen.
+
+## DEV2 – implementierte Annahmen, nicht als Designbeschluss interpretieren
+- HQ produziert in DEV2 wie eine erste Fabrik (2 Güter/Sekunde).
+- Beispielwerte: Mine 4 Erz/s, Fabrik 2 Güter/s; Anfangsbestand Baumaterial 50; Kapazitäten 100/100/80 für Erz/Munition/Baumaterial.
+- Beispielkosten: Weg 2, Mine 18, Fabrik 24, Reparatur 3 je HP; Abriss intakter Anlagen erstattet testweise 50 %.
+- Keine baubaren Lager, keine Produktionsmodi. Der Munitionsbestand wird erst in DEV3 durch Geschütze verbraucht.
+- Alle genannten Zahlen und die Abriss-Rückgewinnung sind **OFFEN für Balancing**, nicht verbindlich.
