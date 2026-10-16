@@ -29,3 +29,11 @@
 - [ ] Gegnerwegfindung: derzeit direkte Zielbewegung ohne Hinderniskollision.
 - [ ] Smartphone-UI mit kleinen Rasterzellen und langer Spielsession.
 - [ ] Debug-Schadenswerkzeug vor Veröffentlichung entfernen.
+
+## Nach DEV3: HQ entfernen und Fabriknetz anpassen (BESCHLOSSEN, Code OFFEN)
+- [ ] HQ aus Startkarte, Darstellung, Sieg-/Niederlagelogik und Wirtschaft entfernen; erste Fabrik und Mine als Startausstattung.
+- [ ] Fabriken als Netzquellen; korrekte logische Versorgung Mine → Fabrik → MG (kein separater HQ-Anschluss).
+- [ ] Niederlage nur, wenn **alle Fabriken zerstört** sind; mit einer verbleibenden Fabrik geht das Spiel weiter.
+- [ ] Netzinseln korrekt behandeln, keine unverbundenen Vorräte teleportieren; HUD weiterhin verständlich.
+- [ ] Benutzerfreundlichkeit beim Abriss der letzten Fabrik klären.
+- [ ] Tests: zwei Fabriken, getrennte Inseln, ausgefallene Fabrik, Netztrennung, vorhandene Munition, Bau/Undo/Reparatur, Niederlage.
