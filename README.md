@@ -24,7 +24,7 @@ python3 -m http.server 8000
 ### Tests und Vorschau erstellen
 
 ```bash
-npm test                 # 41 DEV4-Logik- und Regressionstests
+npm test                 # 53 DEV4.2-Logik- und Regressionstests
 npm run preview          # portable preview.html erzeugen
 python3 tests/browser_dev4.py   # Chromium/Playwright erforderlich
 ```
@@ -38,6 +38,12 @@ Zahlenwerte, Wellen, Baukosten, Bewegung und Kampf sind **Testannahmen**. Kampfe
 Dokumentation: [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md), [`docs/DECISIONS.md`](docs/DECISIONS.md), [`docs/DEVELOPMENT_STATUS.md`](docs/DEVELOPMENT_STATUS.md), [`docs/TASKS.md`](docs/TASKS.md).
 
 ## DEV4.1 – manuelle erste Welle
-Die Startphase ist unbegrenzt: Baue zunächst mit dem verfügbaren Startbaumaterial. **Erst der Button „Welle 1 starten“ startet Förderung, Munition-/Baumaterialproduktion, Einheitenfertigung und den ersten Angriff.** Vorher läuft kein Countdown und es werden keine Ressourcen erzeugt. Welle 2 und 3 starten nach ihren Vorbereitungs-Countdowns automatisch, können aber früher gestartet werden.
+Vor dem Start bleibt die Produktion aus; baue mit Startmaterial. Erst der Startknopf schaltet Förderung, Produktion und erste Angriffswelle gleichzeitig frei. Folgewellen behalten ihren Countdown.
 
-Stand: `feat/dev4-1-manual-wave-start`, lokale Regression **44/44** und simulierte Desktop-/Touch-Interaktion erfolgreich. Echter Smartphone-Test und Merge nach `main` offen.
+
+## DEV4.2 – Förderbandbrücken und Auslastung (2026-10-16)
+- Gelbes Erzband und blaues Munitionsband können eine **automatische orthogonale Brücke** bilden: Im Kreuzungsfeld verlaufen beide Medien auf getrennten Ebenen, niemals gemischt. Die untere Strecke muss gerade durchgehen; das darüberliegende Band verläuft rechtwinklig dazu. Beide Baurichtungen sind erlaubt.
+- Eine Brücke kostet aktuell denselben Baumaterialbetrag wie ein normales Bandsegment (vorläufige Balancingannahme). Schaden, Wiederaufbau, Abriss und Undo bewahren das jeweils andere Band.
+- Direkt auf Minen und Fabriken zeigt der Canvas einen echten Nutzungswert in Prozent der maximalen Rate. **Vor Welle 1 steht PAUSE**, kein irreführender Wert. Für Details kann das Werkzeug **🔍 Info** oder direkt ein bestehendes Gebäude angetippt werden.
+- Die Förderquote wird im Produktionsschritt gemessen; es wird keine komplexe Forgefront-Transport-Allokation übernommen. Vollständige End-to-End-Netztrennung und Ressourceninseln bleiben erhalten.
+- QA: `npm test` **53/53**, Desktop- und simulierte Touch-Browserprüfungen erfolgreich. Smartphone-Hardware und GitHub Actions CI noch offen.
