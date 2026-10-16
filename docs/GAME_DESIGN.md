@@ -57,3 +57,15 @@ Ein einfacher MG-Geschütztyp benötigt einen Anschluss an das Versorgungsnetz u
 Dies ersetzt die Passagen im früheren MVP-Vorschlag („Hauptfabrik/HQ“ bzw. Niederlage durch HQ-Verlust). Der ältere Prototyp (DEV3) verwendet technisch noch HQ und zentrale Bestände; dies ist **nicht** der beschlossene Zielzustand.
 
 Bei mehreren voneinander getrennten Fabriknetzen dürfen Erz und Munition nicht ohne Netzanschluss zwischen den Inseln übertragen werden. Wie wir diese Ressourcen intern je Netz bilanzieren und die gemeinsame HUD-Anzeige erhalten, ist noch OFFEN und vor dem Code-Umbau zu spezifizieren.
+
+## DEV4 – aktuelle Produktions- und Offensivstruktur (BESCHLOSSEN, implementierter Prototyp)
+
+**Kernnetz:** Mine → **gelbes Erzförderband** → Fabrik → **blaues Munitionsförderband** → MG. Ein Band befördert logisch nur seine eigene Güterart. Gelbe und blaue Bänder können sich berühren, ohne sich zu verbinden, und überlagern in DEV4 keine gemeinsame Rasterzelle. Eine zerstörte Verbindung unterbricht nur die zugehörige Güterart.
+
+**Spielerzentralgebäude:** Es gibt **kein HQ**. Die erste Fabrik steht bereits auf der Karte. Solange mindestens eine Fabrik intakt ist, läuft die Mission. Sobald die letzte intakte Fabrik zerstört ist, ist die Mission verloren.
+
+**Lager:** Erz und Munition liegen intern an konkreten Fabriken, damit keine Fabrikinseln unverbunden Ressourcen austauschen. Das HUD summiert sie. Baumaterial bleibt als KISS-Prototypentscheidung ein gemeinsamer Bauvorrat ohne dritten Bandtyp. Die weitere Lokalisierung von Baumaterial ist offen.
+
+**Offensive:** Einheiten werden per Knopfdruck gegen Baumaterial mit Bauzeit bestellt, entstehen bei einer intakten Fabrik und greifen den sichtbaren Gegnerbunker automatisch an. Der Bunker wehrt sie ab. Der prototypische Missionssieg erfolgt bei Bunkerzerstörung; drei abgewehrte Wellen ohne Bunkerzerstörung reichen **nicht** mehr für den Sieg.
+
+**OFFEN:** Freie Zieleingabe, verschiedene Missionsziele/Kampagnen, Meta-Progression, vollständige Lager-/Logistikbalance, Softlock-Schutz und Smartphone-Feinbedienung. Alle Kosten, Wellenwerte, Reichweiten und Bauzeiten sind weiterhin vorläufig.
