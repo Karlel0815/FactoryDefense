@@ -57,3 +57,15 @@ Diese Entscheidungen **ersetzen** bisherige Aussagen, dass ein HQ als Netzquelle
 - Getrennte Fabriknetze: korrekte Ressourcen- und Munitionszuordnung, ohne Material zwischen physisch getrennten Netzen zu teleportieren; zentrale HUD-Übersicht darf bleiben.
 - Verhindern versehentlichen Abrisses der allerletzten Fabrik oder explizite Niederlage durch Eigenabriss (Usability).
 - Anfangslayout/Startressourcen für eine erste Fabrik und Mine, sodass kein wirtschaftlicher Softlock entsteht.
+
+## DEV3.1/DEV4 – Beschlüsse vom 16.10.2026
+
+| ID | Status | Entscheidung |
+|---|---|---|
+| FD-021 | BESCHLOSSEN | **Zwei getrennte Förderbandarten:** Erzförderbänder (gelb/ocker) Mine → Fabrik und Munitionsförderbänder (blau) Fabrik → MG. Keine direkte logische Verbindung zwischen den Bandtypen. |
+| FD-022 | BESCHLOSSEN | Verschiedene Bandtypen müssen visuell eindeutig unterscheidbar sein und dürfen nicht zu einem gemischten Leitungsnetz werden. |
+| FD-023 | BESCHLOSSEN | DEV3.1-Umbau und DEV4 Offensive gemeinsam durchführen; Angriffseinheiten werden auf Bestellung hergestellt, greifen automatisch das Missionsziel an. |
+
+**Ersetzt:** Ein einziges, neutrales Wegenetz aus DEV1–DEV3. Die ab DEV4 erprobten gelben und blauen Bänder sind nun getrennte Systeme. Das HQ entfällt entsprechend FD-018, letzte Fabrik verloren entsprechend FD-019. 
+
+**Implementierte DEV4-Testannahmen, nicht endgültig beschlossen:** Kein Überlappen beider Bandtypen auf einem Feld; Erz/Munition bleiben je Fabrik bevorratet, Baumaterial ist global; eine Mine wird genau einer versorgenden Fabrik zugeordnet; jede versorgte MG-Einheit darf Munition aus einer erreichbaren Fabrik entnehmen; Angriffseinheiten zielen vorerst nur auf den einzelnen Bunker. Produktions-/Kampfzahlen weiterhin offen für Balancing. 
