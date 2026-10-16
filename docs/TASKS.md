@@ -26,3 +26,12 @@
 - [ ] Forschungsfreischaltungen über Missions-/Wellen-Meilensteine.
 - [ ] Save/Load, Release-Bereinigung, echte Smartphone-Regression.
 - [ ] Hauptbranch nur nach Freigabe und überprüften Tests aktualisieren.
+
+## DEV4.1 – erster Wellenstart (IMPLEMENTIERT, Nutzerabnahme OFFEN)
+- [x] Vor Welle 1 keine Countdown-Automatik.
+- [x] Erste Welle startet ausschließlich über den Button.
+- [x] Bis dahin keine Erzförderung, Munition, Baumaterial- oder Einheitenproduktion.
+- [x] Aufbau mit Startmaterial vor dem Start weiterhin möglich; Undo erhalten.
+- [x] Folgewellen weiterhin automatisch nach Vorbereitungszeit oder früher manuell.
+- [x] 44/44 lokale Node-Tests und Desktop-/emulierte Touch-Browser-Smoke bestanden.
+- [ ] DEV4.1-Vorschau vom Nutzer abnehmen lassen; echter Hardwaretest weiterhin offen.
