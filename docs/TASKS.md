@@ -17,7 +17,8 @@
 - [x] Simulierter Touch- und Desktop-Interaktionstest der portablen Vorschau bestanden
 - [ ] Realer Smartphone-Test der regulären Version
 - [ ] GitHub-CI-Status kontrollieren und dokumentieren
-- [ ] DEV2-Spielgefühl und Wirtschaftsbalance durch Nutzer bewerten
+- [x] DEV2-Vorschau vom Nutzer grundsätzlich als funktionierend bestätigt („Geht“, 16.10.2026)
+- [ ] DEV2-Spielgefühl und Wirtschaftsbalance vertieft bewerten (positive Funktionsmeldung ersetzt keinen Balancingtest)
 
 ## DEV3 – Verteidigung (NICHT implementiert)
 - [ ] Geschütze, tatsächlicher Munitionsverbrauch, Reichweite, Schüsse
