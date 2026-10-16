@@ -78,3 +78,115 @@ test('building and undo remain available while waiting without generating materi
  assert.ok(s.resources.material<before);tickGame(s,c,25);
  assert.equal(s.resources.material,before-COSTS.turret);
 });
+
+test('bridge: perpendicular ammo crosses straight ore without mixing resources',()=>{
+ const s=createGame();
+ for(const x of [6,7,8]) assert.equal(applyAction(s,'ore',x,4),true);
+ assert.equal(applyAction(s,'ammo',7,3),true);
+ assert.equal(applyAction(s,'ammo',7,4),true);
+ assert.equal(applyAction(s,'ammo',7,5),true);
+ assert.deepEqual(s.crossings.get('7,4'),{over:'ammo',oreAxis:'h',ammoAxis:'v'});
+ assert.equal(s.belts.ore.get('7,4'),MAX_HP);
+ assert.equal(s.belts.ammo.get('7,4'),MAX_HP);
+ assert.equal(applyAction(s,'ammo',7,4),false);
+ const net=analyzeNetwork(s);
+ assert.notEqual(net.byTile.ore.get('7,4'),undefined);
+ assert.notEqual(net.byTile.ammo.get('7,4'),undefined);
+ assert.notStrictEqual(net.groups.ore,net.groups.ammo);
+});
+test('bridge auto-creation also works when ore passes over a straight blue band',()=>{
+ const s=createGame();
+ for(const y of [3,4,5])assert.equal(applyAction(s,'ammo',8,y),true);
+ assert.equal(applyAction(s,'ore',7,4),true);
+ assert.equal(applyAction(s,'ore',8,4),true);
+ assert.equal(applyAction(s,'ore',9,4),true);
+ assert.deepEqual(s.crossings.get('8,4'),{over:'ore',oreAxis:'h',ammoAxis:'v'});
+});
+test('invalid bridges on a lone stub, a corner or a parallel stretch are rejected without cost',()=>{
+ const s=createGame();const old=s.resources.material;
+ assert.equal(applyAction(s,'ore',2,5),false); // one blue stub, not through-line
+ assert.equal(s.resources.material,old);
+ for(const xy of [[10,4],[11,4],[11,5]])assert.equal(applyAction(s,'ore',...xy),true);
+ const before=s.resources.material;
+ assert.equal(applyAction(s,'ammo',11,4),false); // only one ore neighbor
+ assert.equal(s.resources.material,before);
+});
+test('a bridge cannot turn through a side-arm of the same type',()=>{
+ const s=createGame();
+ for(const x of [5,6,7])assert.equal(applyAction(s,'ore',x,4),true);
+ assert.equal(applyAction(s,'ammo',6,3),true);
+ assert.equal(applyAction(s,'ammo',6,4),true);
+ assert.equal(applyAction(s,'ammo',6,5),true);
+ assert.equal(applyAction(s,'ore',6,5),false); // no other medium mixing
+ // Model an older save with an invalid ore side branch adjacent to crossing;
+ // solver must not connect it by turning inside the bridge.
+ s.belts.ore.set('6,3',MAX_HP);
+ const net=analyzeNetwork(s);
+ const crossGroup=net.groups.ore.find(c=>c.tiles.has('6,4'));
+ assert.ok(crossGroup.tiles.has('5,4')&&crossGroup.tiles.has('7,4'));
+ assert.equal(crossGroup.tiles.has('6,3'),false);
+});
+test('removing or damaging the upper crossing lane does not break the lower lane',()=>{
+ const s=createGame();for(const x of [6,7,8])applyAction(s,'ore',x,4);
+ applyAction(s,'ammo',7,3);applyAction(s,'ammo',7,4);applyAction(s,'ammo',7,5);
+ assert.equal(applyAction(s,'damage',7,4),true);
+ assert.equal(s.belts.ammo.get('7,4'),2);
+ assert.equal(s.belts.ore.get('7,4'),3);
+ assert.equal(applyAction(s,'repair',7,4),true);
+ assert.equal(s.belts.ammo.get('7,4'),3);
+ assert.equal(applyAction(s,'erase',7,4),true);
+ assert.equal(s.crossings.has('7,4'),false);
+ assert.equal(s.belts.ore.get('7,4'),3);
+ assert.equal(s.belts.ammo.has('7,4'),false);
+});
+test('save snapshots preserve bridge direction and its own undo-able resources',()=>{
+ const s=createGame();for(const x of [6,7,8])applyAction(s,'ore',x,4);
+ applyAction(s,'ammo',7,3);
+ const prev=copyGame(s);
+ applyAction(s,'ammo',7,4);
+ assert.equal(prev.crossings.has('7,4'),false);
+ const cp=copyGame(s);cp.crossings.get('7,4').over='ore';
+ assert.equal(s.crossings.get('7,4').over,'ammo');
+});
+test('mine and factory expose actual throughput percentages, not network nominal values',()=>{
+ const s=createGame(),m=mine(s),f=firstFactory(s);
+ assert.equal(m.outputRate||0,0);assert.equal(f.outputRate||0,0);
+ const c=createCombat();tickGame(s,c,.5);
+ assert.equal(m.outputRate||0,0);assert.equal(f.outputRate||0,0);
+ startWave(c);tickGame(s,c,.5);
+ eq(m.outputRate,4);eq(f.outputRate,2);
+ const minePercent=Math.round(100*m.outputRate/4),factoryPercent=Math.round(100*f.outputRate/2);
+ assert.equal(minePercent,100);assert.equal(factoryPercent,100);
+ for(let i=0;i<3;i++)applyAction(s,'damage',3,6);
+ tickEconomy(s,.5);
+ eq(m.outputRate,0);
+ assert.equal(Math.round(100*m.outputRate/4),0);
+});
+test('factory load falls to zero when both output caps are full',()=>{
+ const s=createGame(),f=firstFactory(s);f.store.ammo=CAPS.ammo;s.resources.material=CAPS.material;f.store.ore=8;syncTotals(s);
+ tickEconomy(s,.5);eq(f.outputRate,0);
+});
+test('end-to-end crossing: two factory islands retain separate ore/ammo paths',()=>{
+ const s=createGame();s.belts={ore:new Map(),ammo:new Map()};s.crossings=new Map();
+ s.buildings=[
+  {id:'fac-A',type:'factory',hp:3,x:1,y:4,store:{ore:0,ammo:9}},
+  {id:'fac-B',type:'factory',hp:3,x:4,y:1,store:{ore:0,ammo:5}},
+  {id:'mine-C',type:'mine',hp:3,x:6,y:4},
+  {id:'tur-D',type:'turret',hp:3,x:4,y:6}
+ ];
+ for(const x of [2,3,4,5])s.belts.ore.set(`${x},4`,3);
+ for(const y of [2,3,5])s.belts.ammo.set(`4,${y}`,3);
+ assert.equal(applyAction(s,'ammo',4,4),true);
+ const net=analyzeNetwork(s);
+ assert.equal(net.mineOwner.get('mine-C'),'fac-A');
+ assert.deepEqual(net.turretProviders.get('tur-D'),['fac-B']);
+ assert.equal(consumeAmmo(s,net.turretProviders.get('tur-D'),1),'fac-B');
+ eq(s.buildings[0].store.ammo,9);eq(s.buildings[1].store.ammo,4);
+ // Attacking the upper lane isolates only the turret, not ore input.
+ for(let i=0;i<3;i++)applyAction(s,'damage',4,4);
+ const after=analyzeNetwork(s);
+ assert.equal(after.mineOwner.get('mine-C'),'fac-A');
+ assert.equal(after.turretProviders.has('tur-D'),false);
+ assert.equal(applyAction(s,'ammo',4,4),true);
+ assert.deepEqual(analyzeNetwork(s).turretProviders.get('tur-D'),['fac-B']);
+});
