@@ -39,3 +39,8 @@
 ## NÄCHSTER SCHRITT
 
 DEV4-Preview durch Nutzer spielen lassen und dabei Produktionswege, Verteidigung und Bunkerangriff prüfen. Danach Balancing und weitere Kampagnenziele diskutieren.
+
+## DEV4.1 – MANUELLER ERSTSTART (2026-10-16)
+**IMPLEMENTIERT auf Branch `feat/dev4-1-manual-wave-start`:** Neuer Zustand `ready` ohne Zeitlimit, erste Welle nur durch Startknopf. Fördermengen und automatische Verarbeitung bleiben während `ready` unverändert; auch Angriffs-Einheiten können nicht bestellt/hergestellt werden. Bauen, Reparatur, Entfernen und Undo sind in der Bauphase weiter möglich und verbrauchen ggf. Startbaumaterial. Ab Welle 2 wieder zeitgesteuerte Vorbereitung mit Frühstart.
+
+**QA:** 44/44 lokale Node-Tests bestanden, darunter 120 Sekunden ungeöffnete Bauphase ohne Ressourcenzuwachs, Produktionsstart nach Klick und Neustart; Desktop- und simulierte Touch-Browser-Smokes bestanden. **Realer Smartphone-Test und GitHub CI noch offen.** Vorherige DEV4-Referenz bleibt als Basis erhalten; `main` unverändert. Commit siehe Branch-HEAD.
