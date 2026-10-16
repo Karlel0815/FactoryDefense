@@ -72,3 +72,9 @@ Bei mehreren voneinander getrennten Fabriknetzen dürfen Erz und Munition nicht 
 
 ## DEV4.1 – Bauphase ohne Produktion (BESCHLOSSEN)
 Vor der ersten Welle wird nicht automatisch gestartet: Der Spieler legt Bänder, Minen, Fabriken und MGs in Ruhe mit dem Startmaterial an. **Vor Klick auf „Welle 1 starten“ pausieren Erzförderung, Munition, Baumaterialerzeugung und Produktion von Angriffseinheiten vollständig.** Der Klick startet die erste Welle und das Wirtschaftssystem zusammen. Ab Welle 2 gilt der automatische Vorbereitungs-Countdown (mit Frühstartmöglichkeit). Dies ersetzt alte Formulierungen über einen automatischen Start von Welle 1.
+
+## DEV4.2 – Kreuzungen und Auslastung
+
+Die beiden getrennten Netztypen (gelb = Erz zur Fabrik, blau = Munition zum MG) dürfen sich **rechtwinklig mit einer automatischen Brücke** kreuzen. Eine Kreuzung ist kein Verteiler: Erz und Munition wechseln nie zwischen Bandtypen und es wird am Kreuzungspunkt keine Ware umgewandelt. Das Unterband muss eine gerade Durchfahrt haben; die Brücke auf der anderen Ebene läuft senkrecht dazu. Pro Feld ist maximal eine solche Kreuzung vorgesehen.
+
+Direkt auf Minen und Fabriken wird im laufenden Betrieb die **reale Auslastung in Prozent ihrer Nennleistung** eingeblendet. Vor Start von Welle 1 ist die Produktion angehalten; angezeigt wird deshalb „PAUSE“ statt 0 %. Beim Antippen eines Gebäudes erhält der Spieler Informationen zu Ist-/Maximalleistung sowie möglichen Engpässen. Die pro Bandsegment maximal transportierte Materialmenge bleibt absichtlich nicht begrenzt.
