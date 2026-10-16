@@ -27,11 +27,13 @@
 - [ ] Save/Load, Release-Bereinigung, echte Smartphone-Regression.
 - [ ] Hauptbranch nur nach Freigabe und überprüften Tests aktualisieren.
 
-## DEV4.1 – erster Wellenstart (IMPLEMENTIERT, Nutzerabnahme OFFEN)
-- [x] Vor Welle 1 keine Countdown-Automatik.
-- [x] Erste Welle startet ausschließlich über den Button.
-- [x] Bis dahin keine Erzförderung, Munition, Baumaterial- oder Einheitenproduktion.
-- [x] Aufbau mit Startmaterial vor dem Start weiterhin möglich; Undo erhalten.
-- [x] Folgewellen weiterhin automatisch nach Vorbereitungszeit oder früher manuell.
-- [x] 44/44 lokale Node-Tests und Desktop-/emulierte Touch-Browser-Smoke bestanden.
-- [ ] DEV4.1-Vorschau vom Nutzer abnehmen lassen; echter Hardwaretest weiterhin offen.
+
+## DEV4.2 (IMPLEMENTIERT auf separatem Entwicklungsbranch)
+- [x] Zwei unterschiedlich eingefärbte Bandtypen mit automatisch erzeugten, orthogonalen Brücken.
+- [x] Kreuzungsregel verhindert Verbindung und Abbiegen zwischen bzw. auf den Medien.
+- [x] Abriss, Reparatur, Schaden und Undo von gekreuzten Bändern geprüft.
+- [x] Tatsächliche Minen-/Fabrikauslastung auf dem Canvas und Informationsleiste beim Antippen.
+- [x] 53 Node-Tests und Desktop-/simulierte Touch-Browserprüfungen.
+- [ ] Nutzer-Spieltest und reale Smartphone-Bedienbarkeit.
+- [ ] GitHub-CI tatsächlich überprüfen; kein grüner Lauf nachgewiesen.
+- [ ] Entscheiden, ob Brücken eigene Baukosten/HP benötigen (vorläufig normale Segmentwerte).
