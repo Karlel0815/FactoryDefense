@@ -16,11 +16,16 @@ export function tickEconomy(state,seconds) {
  if(!Number.isFinite(seconds)||seconds<=0)return {mined:0,ammo:0,material:0};
  const dt=Math.min(seconds,0.5),net=analyzeNetwork(state);
  let mined=0,ammo=0,material=0;
+ for(const building of state.buildings){if(building.type==='mine'||building.type==='factory')building.outputRate=0;}
  for(const factory of net.factories) {
    const f=factory.store;
    const count=[...net.mineOwner.values()].filter(id=>id===factory.id).length;
    const possibleOre=Math.min(count*RATE.mine*dt, Math.max(0,CAPS.ore-state.resources.ore-mined));
    f.ore+=possibleOre;mined+=possibleOre;
+   // Sources are assigned deterministically to a factory.
+   const suppliers=state.buildings.filter(b=>b.type==='mine'&&b.hp>0&&net.mineOwner.get(b.id)===factory.id);
+   const perMine=suppliers.length?possibleOre/suppliers.length/dt:0;
+   for(const mine of suppliers)mine.outputRate=perMine;
  }
  // Nonphysical build material is a central pool; ore and ammo never teleport
  // between disconnected production islands.
@@ -34,6 +39,7 @@ export function tickEconomy(state,seconds) {
    let extra=usable-newAmmo-newMaterial;
    const addedAmmo=Math.min(extra,freeAmmo-newAmmo);newAmmo+=addedAmmo;extra-=addedAmmo;
    newMaterial+=Math.min(extra,freeMaterial-newMaterial);
+   factory.outputRate=(newAmmo+newMaterial)/dt;
    f.ore-=newAmmo+newMaterial;f.ammo+=newAmmo;
    ammo+=newAmmo;material+=newMaterial;
  }
