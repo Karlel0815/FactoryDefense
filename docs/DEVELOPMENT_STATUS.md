@@ -4,7 +4,7 @@
 **Repository:** `Karlel0815/FactoryDefense`  
 **Entwicklungsbranch:** `feat/dev4-factory-conveyors-offense`  
 **Referenz DEV3-Dokumentationsstand:** `60fc8298d6e6370a9a8c028bc157f416878cc6e8`  
-**DEV4-Implementierungscommit:** `70a4afb56c97eaafea264feb71ac875da59652b5` (Code und Tests); zugehörige Dokumentationscommits in der Branch-Historie.  
+**DEV4-Commit:** siehe den aktuellen Commit des Entwicklungsbranches  
 **main:** alter Moon-Dome-Stand; absichtlich nicht überschrieben. Forgefront unverändert.
 
 ## IMPLEMENTIERT
@@ -40,7 +40,8 @@
 
 DEV4-Preview durch Nutzer spielen lassen und dabei Produktionswege, Verteidigung und Bunkerangriff prüfen. Danach Balancing und weitere Kampagnenziele diskutieren.
 
-## DEV4.1 – MANUELLER ERSTSTART (2026-10-16)
-**IMPLEMENTIERT auf Branch `feat/dev4-1-manual-wave-start`:** Neuer Zustand `ready` ohne Zeitlimit, erste Welle nur durch Startknopf. Fördermengen und automatische Verarbeitung bleiben während `ready` unverändert; auch Angriffs-Einheiten können nicht bestellt/hergestellt werden. Bauen, Reparatur, Entfernen und Undo sind in der Bauphase weiter möglich und verbrauchen ggf. Startbaumaterial. Ab Welle 2 wieder zeitgesteuerte Vorbereitung mit Frühstart.
 
-**QA:** 44/44 lokale Node-Tests bestanden, darunter 120 Sekunden ungeöffnete Bauphase ohne Ressourcenzuwachs, Produktionsstart nach Klick und Neustart; Desktop- und simulierte Touch-Browser-Smokes bestanden. **Realer Smartphone-Test und GitHub CI noch offen.** Vorherige DEV4-Referenz bleibt als Basis erhalten; `main` unverändert. Commit siehe Branch-HEAD.
+## DEV4.2 – BRÜCKEN UND AUSLASTUNG (IMPLEMENTIERT, RELEASE OFFEN)
+Entwicklungsbranch: `feat/dev4-2-bridges-utilization`, ab DEV4.1. Neu: `state.crossings` definiert in den zwei parallelen Medien-Netzen die Richtung jeder Kreuzung und welches Band oben liegt. Orthogonale Kreuzung nur bei geradem, durchgehendem Unterband; Routing im BFS blockiert seitliches Ein- oder Abbiegen am Kreuzungsfeld. Erz und Munition haben weiterhin getrennte Ressourcenräume, die Fabrik verbindet sie nur durch Umwandlung. Bei Zerstörung des oberen Bandes bleibt das untere nutzbar; Testschaden, Reparatur, Ersetzen und Abriss sind geprüft. Neu sind `outputRate` pro Mine und Fabrik als tatsächliche Förder- bzw. Produktionsleistung; direkter Prozentwert im Gebäude, Pausenstatus vor Welle 1 und eine antippbare Informationsleiste mit Ursache für Unterauslastung.
+
+QA: **53/53 lokale Node-Tests bestanden**, darunter Kreuzungen in beiden Richtungen, unzulässige T-Stücke, Durchleitung ohne Ressourcendurchmischung, separater Schaden, Wiederaufbau, historische Tests und Auslastungswerte. Chromium/Playwright Desktop sowie simuliertes Touch-Gerät **bestanden**. Echtes Smartphone offen; GitHub-CI nicht als bestanden nachgewiesen. Die UI ist auf schmalen Mobilgeräten grundsätzlich noch sehr klein. Alle Produktions-/Brückenkosten sind Prototypwerte. Bisher keine Freigabe für `main`.
